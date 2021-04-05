@@ -20,15 +20,15 @@
     var CONFIG = {"hostname":"jarvissky.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="吃饱了就去撸代码">
+  <meta name="description" content="swift 可选值1、背景swift 是苹果的二儿子，和大儿子OC比起来有很多优势，他更加接近现代编程语言的范式，类似解释语言的语法习惯，却是名副其实的强类型语言。接触最初就会遇到一个swift和OC明显不同的数据类型，可选值 | Optional Value。 中文翻译直接理解的话就是可以选来用也可以不选。个人认为把他理解为未定型更合符合普通的思维习惯,有点像JavaScript中的未定型。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="swift 可选值">
 <meta property="og:url" content="http://jarvissky.com/2021/04/04/swift-%E5%8F%AF%E9%80%89%E5%80%BC/index.html">
 <meta property="og:site_name" content="Jarvis的天空">
-<meta property="og:description" content="吃饱了就去撸代码">
+<meta property="og:description" content="swift 可选值1、背景swift 是苹果的二儿子，和大儿子OC比起来有很多优势，他更加接近现代编程语言的范式，类似解释语言的语法习惯，却是名副其实的强类型语言。接触最初就会遇到一个swift和OC明显不同的数据类型，可选值 | Optional Value。 中文翻译直接理解的话就是可以选来用也可以不选。个人认为把他理解为未定型更合符合普通的思维习惯,有点像JavaScript中的未定型。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2021-04-04T09:10:51.000Z">
-<meta property="article:modified_time" content="2021-04-04T09:16:36.050Z">
+<meta property="article:modified_time" content="2021-04-04T14:13:57.207Z">
 <meta property="article:author" content="Jarvis">
 <meta name="twitter:card" content="summary">
 
@@ -197,7 +197,7 @@
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
       <meta itemprop="name" content="Jarvis">
-      <meta itemprop="description" content="吃饱了就去撸代码">
+      <meta itemprop="description" content="干饭睡觉撸代码">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
@@ -216,7 +216,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2021-04-04 17:10:51 / 修改时间：17:16:36" itemprop="dateCreated datePublished" datetime="2021-04-04T17:10:51+08:00">2021-04-04</time>
+              <time title="创建时间：2021-04-04 17:10:51 / 修改时间：22:13:57" itemprop="dateCreated datePublished" datetime="2021-04-04T17:10:51+08:00">2021-04-04</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -255,7 +255,7 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>0</span>
+              <span>421</span>
             </span>
 
         </div>
@@ -267,13 +267,29 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        
+        <h1 id="swift-可选值"><a href="#swift-可选值" class="headerlink" title="swift 可选值"></a>swift 可选值</h1><h2 id="1、背景"><a href="#1、背景" class="headerlink" title="1、背景"></a>1、背景</h2><p>swift 是苹果的二儿子，和大儿子OC比起来有很多优势，他更加接近现代编程语言的范式，类似解释语言的语法习惯，却是名副其实的强类型语言。接触最初就会遇到一个swift和OC明显不同的数据类型，<strong>可选值 | Optional Value</strong>。</p>
+<p>中文翻译直接理解的话就是可以选来用也可以不选。个人认为把他理解为未定型更合符合普通的思维习惯,有点像JavaScript中的未定型。</p>
+ <span id="more"></span>
+
+<p>我们可以这样声明一个可选值：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">var name : String?</span><br></pre></td></tr></table></figure>
+<p>用标识符var 声明一个变量 name ，后面的？表示它是一个可选值。在后续使用中它的值可能是字符串 “张三”。也可能是一个空值 nil 。</p>
+<p>这里有一点和OC不同的是，OC中的基本数据类型都会有默认的初始值，例如 NSInter 默认为0，CGFloat 默认为 0.0。但是swift里由于可选值概念的存在，基础数据类型（int, double, bool）没有值时也可以是nil.<br>一个可选值没有初始值的话是不可以使用的。</p>
+
     </div>
 
     
     
     
-
+      <div>
+        
+          <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------感谢您的阅读<i class="fa fa-flag"></i>欢迎讨论-------------</div>
+    
+</div>
+        
+      </div>
       <footer class="post-footer">
 
         
@@ -345,6 +361,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#swift-%E5%8F%AF%E9%80%89%E5%80%BC"><span class="nav-number">1.</span> <span class="nav-text">swift 可选值</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1%E3%80%81%E8%83%8C%E6%99%AF"><span class="nav-number">1.1.</span> <span class="nav-text">1、背景</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -353,7 +370,7 @@
     <img class="site-author-image" itemprop="image" alt="Jarvis"
       src="/images/avatar.gif">
   <p class="site-author-name" itemprop="name">Jarvis</p>
-  <div class="site-description" itemprop="description">吃饱了就去撸代码</div>
+  <div class="site-description" itemprop="description">干饭睡觉撸代码</div>
 </div>
 <div class="site-state-wrap motion-element">
   <nav class="site-state">
@@ -397,7 +414,7 @@
 
         
   <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">null </a>
-      <img src="/images/beian.png" style="display: inline-block;"><a href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=%E6%B2%AAICP%E5%A4%872021009233%E5%8F%B7-1" rel="noopener" target="_blank">沪ICP备2021009233号-1 </a>
+      <img src="/images/beian.png" style="display: inline-block;"><a href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=2021009233" rel="noopener" target="_blank">沪ICP备2021009233号-1 </a>
   </div>
 
 <div class="copyright">
@@ -408,11 +425,13 @@
     <i class="fa fa-heart"></i>
   </span>
   <span class="author" itemprop="copyrightHolder">Jarvis</span>
+
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">0k</span>
+    <span title="站点总字数">1k</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
   </div>

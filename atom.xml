@@ -6,7 +6,7 @@
   <link href="http://jarvissky.com/atom.xml" rel="self"/>
   
   <link href="http://jarvissky.com/"/>
-  <updated>2021-04-04T09:16:36.050Z</updated>
+  <updated>2021-04-04T14:13:57.207Z</updated>
   <id>http://jarvissky.com/</id>
   
   <author>
@@ -21,8 +21,13 @@
     <link href="http://jarvissky.com/2021/04/04/swift-%E5%8F%AF%E9%80%89%E5%80%BC/"/>
     <id>http://jarvissky.com/2021/04/04/swift-%E5%8F%AF%E9%80%89%E5%80%BC/</id>
     <published>2021-04-04T09:10:51.000Z</published>
-    <updated>2021-04-04T09:16:36.050Z</updated>
+    <updated>2021-04-04T14:13:57.207Z</updated>
     
+    <content type="html"><![CDATA[<h1 id="swift-可选值"><a href="#swift-可选值" class="headerlink" title="swift 可选值"></a>swift 可选值</h1><h2 id="1、背景"><a href="#1、背景" class="headerlink" title="1、背景"></a>1、背景</h2><p>swift 是苹果的二儿子，和大儿子OC比起来有很多优势，他更加接近现代编程语言的范式，类似解释语言的语法习惯，却是名副其实的强类型语言。接触最初就会遇到一个swift和OC明显不同的数据类型，<strong>可选值 | Optional Value</strong>。</p><p>中文翻译直接理解的话就是可以选来用也可以不选。个人认为把他理解为未定型更合符合普通的思维习惯,有点像JavaScript中的未定型。</p> <span id="more"></span><p>我们可以这样声明一个可选值：</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">var name : String?</span><br></pre></td></tr></table></figure><p>用标识符var 声明一个变量 name ，后面的？表示它是一个可选值。在后续使用中它的值可能是字符串 “张三”。也可能是一个空值 nil 。</p><p>这里有一点和OC不同的是，OC中的基本数据类型都会有默认的初始值，例如 NSInter 默认为0，CGFloat 默认为 0.0。但是swift里由于可选值概念的存在，基础数据类型（int, double, bool）没有值时也可以是nil.<br>一个可选值没有初始值的话是不可以使用的。</p>]]></content>
+    
+    
+    <summary type="html">&lt;h1 id=&quot;swift-可选值&quot;&gt;&lt;a href=&quot;#swift-可选值&quot; class=&quot;headerlink&quot; title=&quot;swift 可选值&quot;&gt;&lt;/a&gt;swift 可选值&lt;/h1&gt;&lt;h2 id=&quot;1、背景&quot;&gt;&lt;a href=&quot;#1、背景&quot; class=&quot;headerlink&quot; title=&quot;1、背景&quot;&gt;&lt;/a&gt;1、背景&lt;/h2&gt;&lt;p&gt;swift 是苹果的二儿子，和大儿子OC比起来有很多优势，他更加接近现代编程语言的范式，类似解释语言的语法习惯，却是名副其实的强类型语言。接触最初就会遇到一个swift和OC明显不同的数据类型，&lt;strong&gt;可选值 | Optional Value&lt;/strong&gt;。&lt;/p&gt;
+&lt;p&gt;中文翻译直接理解的话就是可以选来用也可以不选。个人认为把他理解为未定型更合符合普通的思维习惯,有点像JavaScript中的未定型。&lt;/p&gt;</summary>
     
     
     
