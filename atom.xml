@@ -6,7 +6,7 @@
   <link href="http://jarvissky.com/atom.xml" rel="self"/>
   
   <link href="http://jarvissky.com/"/>
-  <updated>2021-04-24T08:05:20.153Z</updated>
+  <updated>2021-04-24T08:15:41.171Z</updated>
   <id>http://jarvissky.com/</id>
   
   <author>
@@ -17,24 +17,11 @@
   <generator uri="https://hexo.io/">Hexo</generator>
   
   <entry>
-    <title>swift GCD</title>
-    <link href="http://jarvissky.com/2021/04/24/swift-GCD/"/>
-    <id>http://jarvissky.com/2021/04/24/swift-GCD/</id>
-    <published>2021-04-24T08:05:20.000Z</published>
-    <updated>2021-04-24T08:05:20.153Z</updated>
-    
-    
-    
-    
-    
-  </entry>
-  
-  <entry>
     <title>GCD</title>
     <link href="http://jarvissky.com/2021/04/24/swift%20GCD/"/>
     <id>http://jarvissky.com/2021/04/24/swift%20GCD/</id>
     <published>2021-04-24T05:01:52.000Z</published>
-    <updated>2021-04-24T08:12:39.363Z</updated>
+    <updated>2021-04-24T08:15:41.171Z</updated>
     
     <content type="html"><![CDATA[<h1 id="swift5-x-中-GCD"><a href="#swift5-x-中-GCD" class="headerlink" title="swift5.x 中 GCD"></a>swift5.x 中 GCD</h1><p>swift 5.x对GCD封装了更加便捷的API,通过这些丰富的API,可以轻松实现多线程编程.</p><h2 id="0-队列和任务"><a href="#0-队列和任务" class="headerlink" title="0. 队列和任务"></a>0. 队列和任务</h2><p>在iOS多线程编程的术语里，最先要理解的两个概念就是队列和任务。</p><p>队列：就是任务执行的一个排队的空间。分为串行队列，并发队列。</p><p>任务：任务是计算机要处理的一段程序。</p><p>同步处理任务，就像是接力棒赛跑，上个人跑完了自己的路程，下个人继续下一段赛程，它有一个先后顺序。</p><p>异步处理任务，是针对多核计算机的，在单核计算机里是没有多线程的概念的，也就没有异步处理任务的说法，所有提交给CPU的任务，只有排队，一个个的处理。多核计算机异步处理任务，就是多个任务系统会统一调度，让CPU多个核心去同时处理多个任务。<strong>也是多线程编程的原因所在，多线程编程让充分发挥系统性能，提高程序运行效率。</strong></p><span id="more"></span><p>之所以说计算机可以同步或异步处理任务，异步同步处理，就是这些任务一个接一个的处理，有先后开始和完成的顺序。计算机如果是单核的，便没有在处理时可以</p><h2 id="swfit中创建一个队列"><a href="#swfit中创建一个队列" class="headerlink" title="swfit中创建一个队列"></a>swfit中创建一个队列</h2>]]></content>
     
