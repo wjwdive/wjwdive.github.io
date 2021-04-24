@@ -28,7 +28,7 @@
 <meta property="og:description" content="swift5.x 中 GCDswift 5.x对GCD封装了更加便捷的API,通过这些丰富的API,可以轻松实现多线程编程. 0. 队列和任务在iOS多线程编程的术语里，最先要理解的两个概念就是队列和任务。 队列：就是任务执行的一个排队的空间。分为串行队列，并发队列。 任务：任务是计算机要处理的一段程序。 同步处理任务，就像是接力棒赛跑，上个人跑完了自己的路程，下个人继续下一段赛程，它有一个先后顺">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2021-04-24T05:01:52.000Z">
-<meta property="article:modified_time" content="2021-04-24T08:16:31.409Z">
+<meta property="article:modified_time" content="2021-04-24T09:15:00.637Z">
 <meta property="article:author" content="Jarvis">
 <meta property="article:tag" content="swift">
 <meta property="article:tag" content="可选值">
@@ -218,7 +218,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2021-04-24 13:01:52 / 修改时间：16:16:31" itemprop="dateCreated datePublished" datetime="2021-04-24T13:01:52+08:00">2021-04-24</time>
+              <time title="创建时间：2021-04-24 13:01:52 / 修改时间：17:15:00" itemprop="dateCreated datePublished" datetime="2021-04-24T13:01:52+08:00">2021-04-24</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -261,7 +261,7 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>432</span>
+              <span>3.3k</span>
             </span>
 
         </div>
@@ -278,11 +278,86 @@
 <p>队列：就是任务执行的一个排队的空间。分为串行队列，并发队列。</p>
 <p>任务：任务是计算机要处理的一段程序。</p>
 <p>同步处理任务，就像是接力棒赛跑，上个人跑完了自己的路程，下个人继续下一段赛程，它有一个先后顺序。</p>
-<p>异步处理任务，是针对多核计算机的，在单核计算机里是没有多线程的概念的，也就没有异步处理任务的说法，所有提交给CPU的任务，只有排队，一个个的处理。多核计算机异步处理任务，就是多个任务系统会统一调度，让CPU多个核心去同时处理多个任务。<strong>也是多线程编程的原因所在，多线程编程让充分发挥系统性能，提高程序运行效率。</strong></p>
+<p>异步处理任务，是针对多核计算机的，在单核计算机里是没有多线程的概念的，也就没有异步处理任务的说法，所有提交给CPU的任务，只有排队，一个个的处理。多核计算机异步处理任务，就是多个任务系统会统一调度，让CPU多个核心去同时处理多个任务。<strong>也是多线程编程的原因所在，多线程编程让充分发挥系统性能，提高程序运行效率。</strong>多线程编程就是程序员利用系统提供的API,根据业务要求编写出高效的程序。</p>
+<p> 苹果提供的GCD便是一个多多线程编程的强大类库。</p>
+<ol>
+<li>GCD可用于多核的并行运算， </li>
+<li>GCD会自动利用更多的CPU内核</li>
+<li>GCD会自动管理线程的生命周期（创建线程、调度任务、销毁线程）</li>
+</ol>
 <span id="more"></span>
 
-<p>之所以说计算机可以同步或异步处理任务，异步同步处理，就是这些任务一个接一个的处理，有先后开始和完成的顺序。计算机如果是单核的，便没有在处理时可以</p>
-<h2 id="swfit中创建一个队列"><a href="#swfit中创建一个队列" class="headerlink" title="swfit中创建一个队列"></a>swfit中创建一个队列</h2>
+<h2 id="1、swfit中用GCD创建一个队列"><a href="#1、swfit中用GCD创建一个队列" class="headerlink" title="1、swfit中用GCD创建一个队列"></a>1、swfit中用GCD创建一个队列</h2><h3 id="1-1-行队列的创建"><a href="#1-1-行队列的创建" class="headerlink" title="1.1 行队列的创建"></a>1.1 行队列的创建</h3><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 串行队列的创建</span></span><br><span class="line"><span class="keyword">let</span> serialQueue <span class="operator">=</span> <span class="type">DispatchQueue</span>.<span class="keyword">init</span>(label: <span class="string">&quot;com.wjw.SwiftTips.seraialQueue&quot;</span>, qos: .default, attributes: .<span class="keyword">init</span>(rawValue: <span class="number">0</span>), autoreleaseFrequency: .inherit, target: <span class="literal">nil</span>)</span><br><span class="line"><span class="comment">//也可以简单些，除了指定一个label,其它的参数都可以使用一个默认值</span></span><br><span class="line"><span class="keyword">let</span> sQueue <span class="operator">=</span> <span class="type">DispatchQueue</span>.<span class="keyword">init</span>(lable: <span class="string">&quot;com.wjw.SwiftTips.seraialQueue&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">//并发队列的创建</span></span><br><span class="line"><span class="keyword">let</span> coucurrentQueue <span class="operator">=</span> <span class="type">DispatchQueue</span>.<span class="keyword">init</span>(label: <span class="string">&quot;com.wjw.SwiftTips.seraialQueue&quot;</span>, qos: .default, attributes: .coucurrent, autoreleaseFrequency: .inherit, target: <span class="literal">nil</span>)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<p>参数说明 </p>
+<ul>
+<li><p>label: 队列的名字，可以根据项目的bundleID 和功能模块来定义例如<em>com.wjw.SwiftTips.seraialQueue</em></p>
+</li>
+<li><p>qos:    服务质量优先级，队列的优先级。Objective-C中，有四种优先级分别是： </p>
+<p>DISPATCH_<em>QUEUE</em>_PRIORITY_HIGHT</p>
+<p> DISPATCH_<em>QUEUE</em>_PRIORITY_DEFAULT</p>
+<p> DISPATCH_<em>QUEUE</em>_PRIORITY_LOW</p>
+<p> DISPATCH_<em>QUEUE</em>_PRIORITY_BACKGROUND</p>
+<p>而在swift中共有6中，默认是unspecified，其它几种和优先级排序是userInteractive &gt; userInitiated &gt; default &gt; utility &gt; background &gt; unspecified</p>
+<p> public static let userInteractive: DispatchQoS 用户交互 </p>
+<p>public static let userInitiated: DispatchQoS 用户发起</p>
+<p> public static letdefault: DispatchQoS 默认优先级</p>
+<p> public static let utility: DispatchQoS 对应oc中的low 低 </p>
+<p>public static let background: DispatchQoS 后台 </p>
+<p>public static let unspecified: DispatchQoS 不指定优先级</p>
+</li>
+<li><p>attributes: 指定队列性质，是串行队列还是并发队列</p>
+<ul>
+<li>concurrent: 表示队列是并行队列</li>
+<li>没有该参数，默认创建的就是串行队列</li>
+<li>initiallyInactive，标识队列中的任务不会自动执行，需要由队列的activate来触发，如果不添加该标识，队列中的任务会自动运行。</li>
+</ul>
+</li>
+<li><p>autoreleaseFrequency： 类型为枚举类型，用来管理任务内对象的生命周期的自动释放的频率</p>
+<ul>
+<li>inherit: 继承目标队列的该属性</li>
+<li>workItem: 跟随每个任务的执行周期进行自动创建和释放</li>
+<li>nerver: 不会创建自动释放池</li>
+</ul>
+<p>一般用workItem即可，不指定target参数时，应该是系统管理释放频率。</p>
+</li>
+<li><p>target: 设置队列的目标队列，即队列中的任务运行时，实际所在的队列。目标队列最终决定了队列的优先级等级。</p>
+<p>在程序中手动创建的队列最终都指向了系统自带的主队列或全局并发队列。</p>
+</li>
+</ul>
+<h3 id="1-2-系统队列"><a href="#1-2-系统队列" class="headerlink" title="1.2 系统队列"></a>1.2 系统队列</h3><h4 id="主队列"><a href="#主队列" class="headerlink" title="主队列"></a>主队列</h4><p>一切UI线程的刷新都在主线程中进行</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//获取一个主队列</span></span><br><span class="line"><span class="type">DispatchQueue</span>.main</span><br></pre></td></tr></table></figure>
+
+<h4 id="全局队列"><a href="#全局队列" class="headerlink" title="全局队列"></a>全局队列</h4><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//获取全局队列</span></span><br><span class="line"><span class="type">DispatchQueue</span>.global()</span><br></pre></td></tr></table></figure>
+
+<p>我们一般的需要在子线程中进行处理的耗时任务都可以在全局队列中进行。不过也有例外，有时我们利用全局队列反而会发生一些意料不到的问题。后面会讲到。</p>
+<h2 id="2、在一个队列中执行任务"><a href="#2、在一个队列中执行任务" class="headerlink" title="2、在一个队列中执行任务"></a>2、在一个队列中执行任务</h2><p>任务的执行分为 同步执行和异步执行</p>
+<h3 id="2-1-在主队列中执行任务"><a href="#2-1-在主队列中执行任务" class="headerlink" title="2.1 在主队列中执行任务"></a>2.1 在主队列中执行任务</h3><p>我们不做任何处理，在viewDidload 里写的这些代码默认都是在主队列里执行的，这也是为什么页面复杂的时候，加载页面会出现卡顿的原因所在。</p>
+<p>以下代码是绝对不允许直接出现的，在主队列（由于主队列只有一个线程同步执行，我们也叫它主线程）中同步处理任务会造成死锁。</p>
+<p>主线程中的任务都是同步执行的，下面的同步任务执行需要等待主线程让出资源，但是主线程是内存常驻的，它管理整个程序的UI加载刷新，是不可能让出的,主线程完成了应用就退出了，让同步的让主线程执行自定义的打印任务就会一直得不到资源，造成死锁。</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//主线程同步执行一个任务【会造成死锁】</span></span><br><span class="line"><span class="type">DispatchQueue</span>.main.sync &#123;</span><br><span class="line"> 		<span class="built_in">print</span>(<span class="string">&quot;主队列 同步执行任务&quot;</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//主线程异步执行一个任务</span></span><br><span class="line"><span class="type">DispatchQueue</span>.main.sync &#123;</span><br><span class="line"> 		<span class="built_in">print</span>(<span class="string">&quot;主队列 异步执行任务&quot;</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="2-2-在全局队列中执行任务"><a href="#2-2-在全局队列中执行任务" class="headerlink" title="2.2 在全局队列中执行任务"></a>2.2 在全局队列中执行任务</h3><p>在全局队列中同步执行一个任务</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//全局队列中同步执行任务</span></span><br><span class="line"><span class="type">DispatchQueue</span>.global().sync &#123;</span><br><span class="line"> 		<span class="built_in">print</span>(<span class="string">&quot;全局队列 同步执行任务&quot;</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>全局队列中异步执行任务，会自动管理任务的执行，要不要直接在全局队列中执行，还是由全局队列再创建新的线程执行。我们都不用再操心了。</p>
+<p>全局队列中异步执行一个任务</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//全局队列中异步执行任务</span></span><br><span class="line"><span class="type">DispatchQueue</span>.global().async &#123;</span><br><span class="line"> 		<span class="built_in">print</span>(<span class="string">&quot;全局队列 异步执行任务&quot;</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>但是，这里需要补充一下 全局队列异步执行多个任务，barrier是没有用的。正如我们上面提到的，全局队列为了执行效率，并没有检查 barrier。</p>
+<h2 id="3、串行并行嵌套问题"><a href="#3、串行并行嵌套问题" class="headerlink" title="3、串行并行嵌套问题"></a>3、串行并行嵌套问题</h2><h3 id="3-1-串行队列中同步执行任务"><a href="#3-1-串行队列中同步执行任务" class="headerlink" title="3.1 串行队列中同步执行任务"></a>3.1 串行队列中同步执行任务</h3><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//串行队列 同步执行</span></span><br><span class="line"><span class="keyword">@objc</span> <span class="function"><span class="keyword">func</span> <span class="title">serialQueueSyncExecute</span>()</span> &#123;</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;串行队列+同步任务——依次执行&quot;</span>)</span><br><span class="line">        <span class="keyword">let</span> serialQueue <span class="operator">=</span> <span class="type">DispatchQueue</span>.<span class="keyword">init</span>(label: <span class="string">&quot;串行队列1&quot;</span>, qos: .default, attributes: .<span class="keyword">init</span>(rawValue: <span class="number">0</span>), autoreleaseFrequency: .inherit, target: <span class="literal">nil</span>)</span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> <span class="number">0</span><span class="operator">..&lt;</span><span class="number">10</span> &#123;</span><br><span class="line">            serialQueue.async &#123;</span><br><span class="line">                sleep(arc4random()<span class="operator">%</span><span class="number">3</span>)</span><br><span class="line">                <span class="built_in">print</span>(i)</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="3-2-串行队列中异步执行任务"><a href="#3-2-串行队列中异步执行任务" class="headerlink" title="3.2 串行队列中异步执行任务"></a>3.2 串行队列中异步执行任务</h3><h3 id="3-3-并行队列中同步执行任务"><a href="#3-3-并行队列中同步执行任务" class="headerlink" title="3.3 并行队列中同步执行任务"></a>3.3 并行队列中同步执行任务</h3><h3 id="3-4-并行队列中异步执行任务"><a href="#3-4-并行队列中异步执行任务" class="headerlink" title="3.4 并行队列中异步执行任务"></a>3.4 并行队列中异步执行任务</h3>
     </div>
 
     
@@ -372,7 +447,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#swift5-x-%E4%B8%AD-GCD"><span class="nav-number">1.</span> <span class="nav-text">swift5.x 中 GCD</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#0-%E9%98%9F%E5%88%97%E5%92%8C%E4%BB%BB%E5%8A%A1"><span class="nav-number">1.1.</span> <span class="nav-text">0. 队列和任务</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#swfit%E4%B8%AD%E5%88%9B%E5%BB%BA%E4%B8%80%E4%B8%AA%E9%98%9F%E5%88%97"><span class="nav-number">1.2.</span> <span class="nav-text">swfit中创建一个队列</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#swift5-x-%E4%B8%AD-GCD"><span class="nav-number">1.</span> <span class="nav-text">swift5.x 中 GCD</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#0-%E9%98%9F%E5%88%97%E5%92%8C%E4%BB%BB%E5%8A%A1"><span class="nav-number">1.1.</span> <span class="nav-text">0. 队列和任务</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1%E3%80%81swfit%E4%B8%AD%E7%94%A8GCD%E5%88%9B%E5%BB%BA%E4%B8%80%E4%B8%AA%E9%98%9F%E5%88%97"><span class="nav-number">1.2.</span> <span class="nav-text">1、swfit中用GCD创建一个队列</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-%E8%A1%8C%E9%98%9F%E5%88%97%E7%9A%84%E5%88%9B%E5%BB%BA"><span class="nav-number">1.2.1.</span> <span class="nav-text">1.1 行队列的创建</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-%E7%B3%BB%E7%BB%9F%E9%98%9F%E5%88%97"><span class="nav-number">1.2.2.</span> <span class="nav-text">1.2 系统队列</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%BB%E9%98%9F%E5%88%97"><span class="nav-number">1.2.2.1.</span> <span class="nav-text">主队列</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%85%A8%E5%B1%80%E9%98%9F%E5%88%97"><span class="nav-number">1.2.2.2.</span> <span class="nav-text">全局队列</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2%E3%80%81%E5%9C%A8%E4%B8%80%E4%B8%AA%E9%98%9F%E5%88%97%E4%B8%AD%E6%89%A7%E8%A1%8C%E4%BB%BB%E5%8A%A1"><span class="nav-number">1.3.</span> <span class="nav-text">2、在一个队列中执行任务</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-%E5%9C%A8%E4%B8%BB%E9%98%9F%E5%88%97%E4%B8%AD%E6%89%A7%E8%A1%8C%E4%BB%BB%E5%8A%A1"><span class="nav-number">1.3.1.</span> <span class="nav-text">2.1 在主队列中执行任务</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-%E5%9C%A8%E5%85%A8%E5%B1%80%E9%98%9F%E5%88%97%E4%B8%AD%E6%89%A7%E8%A1%8C%E4%BB%BB%E5%8A%A1"><span class="nav-number">1.3.2.</span> <span class="nav-text">2.2 在全局队列中执行任务</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3%E3%80%81%E4%B8%B2%E8%A1%8C%E5%B9%B6%E8%A1%8C%E5%B5%8C%E5%A5%97%E9%97%AE%E9%A2%98"><span class="nav-number">1.4.</span> <span class="nav-text">3、串行并行嵌套问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-%E4%B8%B2%E8%A1%8C%E9%98%9F%E5%88%97%E4%B8%AD%E5%90%8C%E6%AD%A5%E6%89%A7%E8%A1%8C%E4%BB%BB%E5%8A%A1"><span class="nav-number">1.4.1.</span> <span class="nav-text">3.1 串行队列中同步执行任务</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-%E4%B8%B2%E8%A1%8C%E9%98%9F%E5%88%97%E4%B8%AD%E5%BC%82%E6%AD%A5%E6%89%A7%E8%A1%8C%E4%BB%BB%E5%8A%A1"><span class="nav-number">1.4.2.</span> <span class="nav-text">3.2 串行队列中异步执行任务</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-3-%E5%B9%B6%E8%A1%8C%E9%98%9F%E5%88%97%E4%B8%AD%E5%90%8C%E6%AD%A5%E6%89%A7%E8%A1%8C%E4%BB%BB%E5%8A%A1"><span class="nav-number">1.4.3.</span> <span class="nav-text">3.3 并行队列中同步执行任务</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-4-%E5%B9%B6%E8%A1%8C%E9%98%9F%E5%88%97%E4%B8%AD%E5%BC%82%E6%AD%A5%E6%89%A7%E8%A1%8C%E4%BB%BB%E5%8A%A1"><span class="nav-number">1.4.4.</span> <span class="nav-text">3.4 并行队列中异步执行任务</span></a></li></ol></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -450,7 +525,7 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">1k</span>
+    <span title="站点总字数">4k</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
   </div>
