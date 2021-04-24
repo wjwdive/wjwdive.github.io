@@ -6,7 +6,7 @@
   <link href="http://jarvissky.com/atom.xml" rel="self"/>
   
   <link href="http://jarvissky.com/"/>
-  <updated>2021-04-04T14:13:57.207Z</updated>
+  <updated>2021-04-24T08:03:38.846Z</updated>
   <id>http://jarvissky.com/</id>
   
   <author>
@@ -17,11 +17,33 @@
   <generator uri="https://hexo.io/">Hexo</generator>
   
   <entry>
+    <title>GCD</title>
+    <link href="http://jarvissky.com/2021/04/24/swift%20GCD/"/>
+    <id>http://jarvissky.com/2021/04/24/swift%20GCD/</id>
+    <published>2021-04-24T05:01:52.000Z</published>
+    <updated>2021-04-24T08:03:38.846Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="swift5-x-中-GCD"><a href="#swift5-x-中-GCD" class="headerlink" title="swift5.x 中 GCD"></a>swift5.x 中 GCD</h1><p>swift 5.x对GCD封装了更加便捷的API,通过这些丰富的API,可以轻松实现多线程编程.</p><h2 id="0-队列和任务"><a href="#0-队列和任务" class="headerlink" title="0. 队列和任务"></a>0. 队列和任务</h2><p>在iOS多线程编程的术语里，最先要理解的两个概念就是队列和任务。</p><p>队列：就是任务执行的一个排队的空间。分为串行队列，并发队列。</p><p>任务：任务是计算机要处理的一段程序。</p><p>同步处理任务，就像是接力棒赛跑，上个人跑完了自己的路程，下个人继续下一段赛程，它有一个先后顺序。</p><p>异步处理任务，是针对多核计算机的，在单核计算机里是没有多线程的概念的，也就没有异步处理任务的说法，所有提交给CPU的任务，只有排队，一个个的处理。</p><p>之所以说计算机可以同步或异步处理任务，异步同步处理，就是这些任务一个接一个的处理，有先后开始和完成的顺序。计算机如果是单核的，便没有在处理时可以</p><h2 id="swfit中创建一个队列"><a href="#swfit中创建一个队列" class="headerlink" title="swfit中创建一个队列"></a>swfit中创建一个队列</h2>]]></content>
+    
+    
+      
+      
+    <summary type="html">&lt;h1 id=&quot;swift5-x-中-GCD&quot;&gt;&lt;a href=&quot;#swift5-x-中-GCD&quot; class=&quot;headerlink&quot; title=&quot;swift5.x 中 GCD&quot;&gt;&lt;/a&gt;swift5.x 中 GCD&lt;/h1&gt;&lt;p&gt;swift 5.x对GCD封装了更加便捷的A</summary>
+      
+    
+    
+    
+    
+    <category term="swift" scheme="http://jarvissky.com/tags/swift/"/>
+    
+  </entry>
+  
+  <entry>
     <title>swift 可选值</title>
     <link href="http://jarvissky.com/2021/04/04/swift-%E5%8F%AF%E9%80%89%E5%80%BC/"/>
     <id>http://jarvissky.com/2021/04/04/swift-%E5%8F%AF%E9%80%89%E5%80%BC/</id>
     <published>2021-04-04T09:10:51.000Z</published>
-    <updated>2021-04-04T14:13:57.207Z</updated>
+    <updated>2021-04-05T06:22:18.001Z</updated>
     
     <content type="html"><![CDATA[<h1 id="swift-可选值"><a href="#swift-可选值" class="headerlink" title="swift 可选值"></a>swift 可选值</h1><h2 id="1、背景"><a href="#1、背景" class="headerlink" title="1、背景"></a>1、背景</h2><p>swift 是苹果的二儿子，和大儿子OC比起来有很多优势，他更加接近现代编程语言的范式，类似解释语言的语法习惯，却是名副其实的强类型语言。接触最初就会遇到一个swift和OC明显不同的数据类型，<strong>可选值 | Optional Value</strong>。</p><p>中文翻译直接理解的话就是可以选来用也可以不选。个人认为把他理解为未定型更合符合普通的思维习惯,有点像JavaScript中的未定型。</p> <span id="more"></span><p>我们可以这样声明一个可选值：</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">var name : String?</span><br></pre></td></tr></table></figure><p>用标识符var 声明一个变量 name ，后面的？表示它是一个可选值。在后续使用中它的值可能是字符串 “张三”。也可能是一个空值 nil 。</p><p>这里有一点和OC不同的是，OC中的基本数据类型都会有默认的初始值，例如 NSInter 默认为0，CGFloat 默认为 0.0。但是swift里由于可选值概念的存在，基础数据类型（int, double, bool）没有值时也可以是nil.<br>一个可选值没有初始值的话是不可以使用的。</p>]]></content>
     
@@ -31,8 +53,14 @@
     
     
     
-    <category term="swift iOS" scheme="http://jarvissky.com/categories/swift-iOS/"/>
+    <category term="iOS" scheme="http://jarvissky.com/categories/iOS/"/>
     
+    <category term="swift" scheme="http://jarvissky.com/categories/iOS/swift/"/>
+    
+    
+    <category term="swift" scheme="http://jarvissky.com/tags/swift/"/>
+    
+    <category term="可选值" scheme="http://jarvissky.com/tags/%E5%8F%AF%E9%80%89%E5%80%BC/"/>
     
   </entry>
   
@@ -41,7 +69,7 @@
     <link href="http://jarvissky.com/2021/04/04/hello-world/"/>
     <id>http://jarvissky.com/2021/04/04/hello-world/</id>
     <published>2021-04-04T03:51:04.346Z</published>
-    <updated>2021-04-04T03:51:04.346Z</updated>
+    <updated>2021-04-05T06:10:16.637Z</updated>
     
     <content type="html"><![CDATA[<p>Welcome to <a href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p><h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/writing.html">Writing</a></p><h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/server.html">Server</a></p><h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/generating.html">Generating</a></p><h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>]]></content>
     
@@ -53,6 +81,8 @@
     
     
     
+    
+    <category term="hexo" scheme="http://jarvissky.com/tags/hexo/"/>
     
   </entry>
   
