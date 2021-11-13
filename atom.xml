@@ -43,29 +43,22 @@
   </entry>
   
   <entry>
-    <title>视C++为一个语言联邦</title>
-    <link href="http://jarvissky.com/2021/11/13/%E8%A7%86C-%E4%B8%BA%E4%B8%80%E4%B8%AA%E8%AF%AD%E8%A8%80%E8%81%94%E9%82%A6/"/>
-    <id>http://jarvissky.com/2021/11/13/%E8%A7%86C-%E4%B8%BA%E4%B8%80%E4%B8%AA%E8%AF%AD%E8%A8%80%E8%81%94%E9%82%A6/</id>
-    <published>2021-11-13T07:39:22.000Z</published>
-    <updated>2021-11-13T07:42:22.040Z</updated>
+    <title></title>
+    <link href="http://jarvissky.com/2021/11/13/C++%20%E6%9D%A1%E6%AC%BE01:-%E8%A7%86C++%E4%B8%BA%E4%B8%80%E4%B8%AA%E8%AF%AD%E8%A8%80%E8%81%94%E9%82%A6/"/>
+    <id>http://jarvissky.com/2021/11/13/C++%20%E6%9D%A1%E6%AC%BE01:-%E8%A7%86C++%E4%B8%BA%E4%B8%80%E4%B8%AA%E8%AF%AD%E8%A8%80%E8%81%94%E9%82%A6/</id>
+    <published>2021-11-13T07:39:22.208Z</published>
+    <updated>2021-11-13T08:32:46.960Z</updated>
     
-    <content type="html"><![CDATA[<p>C++ 是支持多重范性编程的语言<br>面向过程编程（procedural）<br>面向对象形式（object-oriented)<br>函数形式（functional)<br>范型形式（generic)<br>元编程形式（metaprogramming)</p><p>不同的编程模式需要遵循一些特定的规约，所以C++在不同的时候需要使用不同的规约特性：<br>最简单的方法是将C++视为一个由相关语言组成的联邦，而非单一语言。在其某个次语言sublanguage中，各种守则与通例都倾向简单、直观易懂、并且容易记住。<br>当你从一个次语言移往另一个次语言，守则可能改变。因此，为了理解C++,必须认识其主要的次语言。幸运的是总共只有4个。</p><h2 id="C"><a href="#C" class="headerlink" title="C"></a>C</h2><p>说到底C++仍是以C为基础。区块（blocks）,语句（statements)、预处理器（preprocessor)、内置类型（build-in data types)、数组（arrays）、指针（pointers）、等统统来自C。许多时候C++问题的解法其实不过就是较高级的C解法（例如条款2谈到预处理器之外的另一选择），条款13谈到以对象管理资源，当你以C++内的C成分工作时，高效守则映射出C语言的局限：没有模板（templates）,没有异常（exceptions),没有重载（overloading)…</p><h2 id="Object-Oriented-C"><a href="#Object-Oriented-C" class="headerlink" title="Object-Oriented C++"></a>Object-Oriented C++</h2><p>这部分也就是C with classes 所诉求的：classes（包括构造函数和析构函数），封装（encapsulation）,继承（inheritance）,多态（ploymorphism），virtual函数（动态绑定）等等。这一部分是面向对象设计之古典守则在C++上最直接实施。</p><h2 id="Template-C"><a href="#Template-C" class="headerlink" title="Template C++"></a>Template C++</h2><p>这是C++的范型编程（generic programming）部分，也是大多数程序员经验最少的部分。Template 相关考虑与设计已经弥漫整个C++,良好编程守则中”维template适用”的特殊条款并不罕见（例如条款46谈到调用template functions时如何协助类型转换）。实际上由于templates 威力强大，它们带来崭新的变成范型（programming paradigm）,也即是所谓的template metaprogramming（TMP,模板元编程）。条款48对此提供了一份概述，但除非你是template激进团队的中坚骨干，大可不必太担心这些。TMP相关规则很少与C++主流编程相互影响。</p><h2 id="STL"><a href="#STL" class="headerlink" title="STL"></a>STL</h2><p>STL是template程序库，但它非常特殊。它对容器（containers）、迭代器（iterators）、算法（algorithms）以及函数对象（function objects）的规约有极佳的紧密配合与协调，然而templates及程序库也可以其他想法建置起来。STL有自己特殊的办事方式，当你伙同STL一起工作，你必须遵守它的规约。</p><p>这四种次语言切换时规约会变，不必惊讶。<br>例如对内置类型而言（pass-by-value）通常比（pass-by-reference） 高效，但当你从C part of C++ 移往Object-Oriented C++,由于用户自定义（user-defined)构造函数和析构函数的存在，pass-by-reference-to-const往往更好。运用Template C++时尤其如此，因为彼时你甚至不知道所处理的对象的类型。然而一旦阔如STL你就会了解，迭代器和函数对象都是在C++指针之上塑造出来的，所以对STL的迭代器和函数对象而言，旧式的Cpass-by-value守则再次适用。（参数传递参照条款20）</p>]]></content>
-    
-    
-      
-      
-    <summary type="html">&lt;p&gt;C++ 是支持多重范性编程的语言&lt;br&gt;面向过程编程（procedural）&lt;br&gt;面向对象形式（object-oriented)&lt;br&gt;函数形式（functional)&lt;br&gt;范型形式（generic)&lt;br&gt;元编程形式（metaprogramming)&lt;/p&gt;
-&lt;p&gt;不</summary>
-      
+    <content type="html"><![CDATA[<p>title: ‘Effective C++ 条款01:视C++为一个语言联邦’<br>date: 2021-11-13 15:39:22<br>tags: [effective C++]<br>categories: [C++, effective c++]</p><p>C++ 是支持多重范性编程的语言<br>面向过程编程（procedural）<br>面向对象形式（object-oriented)<br>函数形式（functional)<br>范型形式（generic)<br>元编程形式（metaprogramming)</p><p>不同的编程模式需要遵循一些特定的规约，所以C++在不同的时候需要使用不同的规约特性：<br>最简单的方法是将C++视为一个由相关语言组成的联邦，而非单一语言。在其某个次语言sublanguage中，各种守则与通例都倾向简单、直观易懂、并且容易记住。<br>当你从一个次语言移往另一个次语言，守则可能改变。因此，为了理解C++,必须认识其主要的次语言。幸运的是总共只有4个。</p><h2 id="C"><a href="#C" class="headerlink" title="C"></a>C</h2><p>说到底C++仍是以C为基础。区块（blocks）,语句（statements)、预处理器（preprocessor)、内置类型（build-in data types)、数组（arrays）、指针（pointers）、等统统来自C。许多时候C++问题的解法其实不过就是较高级的C解法（例如条款2谈到预处理器之外的另一选择），条款13谈到以对象管理资源，当你以C++内的C成分工作时，高效守则映射出C语言的局限：没有模板（templates）,没有异常（exceptions),没有重载（overloading)…</p><span id="more"></span><h2 id="Object-Oriented-C"><a href="#Object-Oriented-C" class="headerlink" title="Object-Oriented C++"></a>Object-Oriented C++</h2><p>这部分也就是C with classes 所诉求的：classes（包括构造函数和析构函数），封装（encapsulation）,继承（inheritance）,多态（ploymorphism），virtual函数（动态绑定）等等。这一部分是面向对象设计之古典守则在C++上最直接实施。</p><h2 id="Template-C"><a href="#Template-C" class="headerlink" title="Template C++"></a>Template C++</h2><p>这是C++的范型编程（generic programming）部分，也是大多数程序员经验最少的部分。Template 相关考虑与设计已经弥漫整个C++,良好编程守则中”维template适用”的特殊条款并不罕见（例如条款46谈到调用template functions时如何协助类型转换）。实际上由于templates 威力强大，它们带来崭新的变成范型（programming paradigm）,也即是所谓的template metaprogramming（TMP,模板元编程）。条款48对此提供了一份概述，但除非你是template激进团队的中坚骨干，大可不必太担心这些。TMP相关规则很少与C++主流编程相互影响。</p><h2 id="STL"><a href="#STL" class="headerlink" title="STL"></a>STL</h2><p>STL是template程序库，但它非常特殊。它对容器（containers）、迭代器（iterators）、算法（algorithms）以及函数对象（function objects）的规约有极佳的紧密配合与协调，然而templates及程序库也可以其他想法建置起来。STL有自己特殊的办事方式，当你伙同STL一起工作，你必须遵守它的规约。</p><p>这四种次语言切换时规约会变，不必惊讶。<br>例如对内置类型而言（pass-by-value）通常比（pass-by-reference） 高效，但当你从C part of C++ 移往Object-Oriented C++,由于用户自定义（user-defined)构造函数和析构函数的存在，pass-by-reference-to-const往往更好。运用Template C++时尤其如此，因为彼时你甚至不知道所处理的对象的类型。然而一旦阔如STL你就会了解，迭代器和函数对象都是在C++指针之上塑造出来的，所以对STL的迭代器和函数对象而言，旧式的Cpass-by-value守则再次适用。（参数传递参照条款20）</p>]]></content>
     
     
+    <summary type="html">&lt;p&gt;title: ‘Effective C++ 条款01:视C++为一个语言联邦’&lt;br&gt;date: 2021-11-13 15:39:22&lt;br&gt;tags: [effective C++]&lt;br&gt;categories: [C++, effective c++]&lt;/p&gt;
+&lt;p&gt;C++ 是支持多重范性编程的语言&lt;br&gt;面向过程编程（procedural）&lt;br&gt;面向对象形式（object-oriented)&lt;br&gt;函数形式（functional)&lt;br&gt;范型形式（generic)&lt;br&gt;元编程形式（metaprogramming)&lt;/p&gt;
+&lt;p&gt;不同的编程模式需要遵循一些特定的规约，所以C++在不同的时候需要使用不同的规约特性：&lt;br&gt;最简单的方法是将C++视为一个由相关语言组成的联邦，而非单一语言。在其某个次语言sublanguage中，各种守则与通例都倾向简单、直观易懂、并且容易记住。&lt;br&gt;当你从一个次语言移往另一个次语言，守则可能改变。因此，为了理解C++,必须认识其主要的次语言。幸运的是总共只有4个。&lt;/p&gt;
+&lt;h2 id=&quot;C&quot;&gt;&lt;a href=&quot;#C&quot; class=&quot;headerlink&quot; title=&quot;C&quot;&gt;&lt;/a&gt;C&lt;/h2&gt;&lt;p&gt;说到底C++仍是以C为基础。区块（blocks）,语句（statements)、预处理器（preprocessor)、内置类型（build-in data types)、数组（arrays）、指针（pointers）、等统统来自C。许多时候C++问题的解法其实不过就是较高级的C解法（例如条款2谈到预处理器之外的另一选择），条款13谈到以对象管理资源，当你以C++内的C成分工作时，高效守则映射出C语言的局限：没有模板（templates）,没有异常（exceptions),没有重载（overloading)…&lt;/p&gt;</summary>
     
-    <category term="C++" scheme="http://jarvissky.com/categories/C/"/>
-    
-    <category term="effective c++" scheme="http://jarvissky.com/categories/C/effective-c/"/>
     
     
-    <category term="effective C++" scheme="http://jarvissky.com/tags/effective-C/"/>
     
   </entry>
   
