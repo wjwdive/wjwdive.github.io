@@ -130,7 +130,7 @@
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">5</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">6</span></a>
 
   </li>
         <li class="menu-item menu-item-about">
@@ -185,6 +185,144 @@
 
           <div class="content index posts-expand">
             
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://jarvissky.com/2021/11/13/Effective-C-%E6%9D%A1%E6%AC%BE02-%E5%B0%BD%E9%87%8F%E4%BB%A5const-enum-inline-%E6%9B%BF%E6%8D%A2-define/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Jarvis">
+      <meta itemprop="description" content="干饭睡觉撸代码">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Jarvis的天空">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/11/13/Effective-C-%E6%9D%A1%E6%AC%BE02-%E5%B0%BD%E9%87%8F%E4%BB%A5const-enum-inline-%E6%9B%BF%E6%8D%A2-define/" class="post-title-link" itemprop="url">Effective C++ 条款02: 尽量以const, enum, inline 替换#define</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-11-13 16:20:10 / 修改时间：16:21:38" itemprop="dateCreated datePublished" datetime="2021-11-13T16:20:10+08:00">2021-11-13</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/C/" itemprop="url" rel="index"><span itemprop="name">C++</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/C/effective-c/" itemprop="url" rel="index"><span itemprop="name">effective c++</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2021/11/13/Effective-C-%E6%9D%A1%E6%AC%BE02-%E5%B0%BD%E9%87%8F%E4%BB%A5const-enum-inline-%E6%9B%BF%E6%8D%A2-define/" class="post-meta-item leancloud_visitors" data-flag-title="Effective C++ 条款02: 尽量以const, enum, inline 替换#define" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2021/11/13/Effective-C-%E6%9D%A1%E6%AC%BE02-%E5%B0%BD%E9%87%8F%E4%BB%A5const-enum-inline-%E6%9B%BF%E6%8D%A2-define/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/11/13/Effective-C-%E6%9D%A1%E6%AC%BE02-%E5%B0%BD%E9%87%8F%E4%BB%A5const-enum-inline-%E6%9B%BF%E6%8D%A2-define/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>3.4k</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="Effective-C-条款02-尽量以const-enum-inline-替换-define"><a href="#Effective-C-条款02-尽量以const-enum-inline-替换-define" class="headerlink" title="Effective C++ 条款02: 尽量以const, enum, inline 替换#define"></a>Effective C++ 条款02: 尽量以const, enum, inline 替换#define</h1><h2 id="1、-define-宏定义的记号名称从未被编译器看见"><a href="#1、-define-宏定义的记号名称从未被编译器看见" class="headerlink" title="1、#define  宏定义的记号名称从未被编译器看见"></a>1、#define  宏定义的记号名称从未被编译器看见</h2><p>【注意，作者这里没有称之为变量】<br>#define ASPECT_RATIO 1.653<br>ASPECT_RATIO这个记号也许从来就没有被编译器看见；也许在编译器开始处理源码之前他就被预处理器移走了。于是，ASPECT_RATIO根本没有进入符号表（symbol table）内。如果出现编译错误，可能编译器爆出的是1.653错了，。。。可能你压根想不到是自己定义的ASPECT_RATIO所指的意义。<br>预处理时会把源代码里的ASPECT_RATIO替换为 1.653，没有类型检查</p>
+<h2 id="2、解决之道：用一个常量替换上述的宏（-define）"><a href="#2、解决之道：用一个常量替换上述的宏（-define）" class="headerlink" title="2、解决之道：用一个常量替换上述的宏（#define）"></a>2、解决之道：用一个常量替换上述的宏（#define）</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">const double AspectRatio &#x3D; 1.653;  &#x2F;&#x2F;大写常用与宏，因此这里用变量名的定义规则</span><br></pre></td></tr></table></figure>
+
+<p>作为一个语言常量，AspectRatio肯定会被编译器看到，当就会进入记号表内。此外对浮点常量（floating point constant,）而言，使用常量可能比使用#define导致较小的码，因为预处理器”盲目地将宏名称ASPECT_RATIO替换为1.653”可能导致目标码（object code）出现多分1.653，若改为常量AspectRatio绝不会出现相同的情况。</p>
+<h3 id="2-1-用常量指针（constant-pointers）"><a href="#2-1-用常量指针（constant-pointers）" class="headerlink" title="2.1 用常量指针（constant pointers）"></a>2.1 用常量指针（constant pointers）</h3><p>由于常量定义式通常被放在头文件内（以便被不同的源码引入），因此有必要将指针（而不是指针所指之物）声明为const。例如若要在头文件内定义一个常量（不变的）char*-based字符串，必须写两次const:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">const char* const authorName &#x3D; &quot;Scott Meyers&quot;;</span><br></pre></td></tr></table></figure>
+
+<p>C++定义常量时，使用string对象更合时宜</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">const std::string authorName(&quot;Scott Meyers&quot;); </span><br></pre></td></tr></table></figure>
+
+<h3 id="2-2-class-专属常量"><a href="#2-2-class-专属常量" class="headerlink" title="2.2 class 专属常量"></a>2.2 class 专属常量</h3><p>为了将常量的作用域限制在class内，必须让它成为class 的一个成员（member）;而确保此常量至多只有一份实体，必须让它成为一个static成员。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">class GamePlayer &#123;</span><br><span class="line">private:</span><br><span class="line">  static const int NumTurns &#x3D; 5;  &#x2F;&#x2F;  声明类内常量</span><br><span class="line">  int scores[NumTurns];  &#x2F;&#x2F;使用该常量</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>但是，这里所看到的是 NumTurns的声明式。通常C++要求你对你所使用的任何东西提供一个定义式，但如果它是个class专属常量又是static 且为正数类型（integral type, 例如 ints, cahrs, bools）,则需要特殊处理。只要不取他们的地址，你可以声明并使用它们，而无需提供定义式。但如果你取某个class专属常量的地址，或纵使你不取其地址而你的编译器却坚持（不正确地）坚持要看到一个定义式，你就必须另外提供定义式如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">const int GamePlayer::NumTurns;  &#x2F;&#x2F;NumTurns的定义，下面告诉你为什么没有给予数值</span><br></pre></td></tr></table></figure>
+
+<p>请把这个式子放进一个实现文件而非非头文件。由于class 常量已在声明时获得初值（例如先前声明NumTurns 时为它设初值5），因此定义时不可以再设置初值。<br><strong>不可以在class内使用宏定义</strong><br>如果编译器不支持上诉语法，可以将初值放在定义式</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">class ConstEstimate &#123;</span><br><span class="line">private:</span><br><span class="line">  static const double FudgeFactor;  &#x2F;&#x2F; static class 常量声明，位于头文件内</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;static class 常量声明位于头文件内</span><br><span class="line">const double ConstEstimate::FudgeFactor &#x3D; 1.35;</span><br></pre></td></tr></table></figure>
+
+<p>这几乎是你在任何时候唯一需要做的事情。唯一例外是当你子class编译期间需要一个class常量值，例如在上述的GamePlayer::scores的数组声明式中（是的，编译器坚持必须在编译期间知道数组的大小）。这时候万一你的编译器（错误地）不允许”static 整数型class常量”完成”in class初值设定”，可改用所谓的”the enum hack “补偿做法。其理论基础是：”一个属于枚举类型（enumerated type）的数值可权充ints被使用”，于是 GamePlayer可定义如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">class GamePlayer &#123;</span><br><span class="line">private:</span><br><span class="line">  enum &#123; NumTurns &#x3D; 5&#125;;&#x2F;&#x2F;&quot;the enum hack&quot;令NumTurns 成为5的一个记号名称。这就没问题了</span><br><span class="line">  int scores[NumTurns];</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>关于”the enum hack”<br>1、enum hack 的行为某方面说比较像#define而不像cosnt, 有时候这正是你想要的，例如 取一个const的地址是合法的，但是去一个enum的地址就是不合法，而取一个#define的地址通常也不合法。<br>如果你想不让别人获得一个pointer或reference指向你的某个整数常量，enum 可以帮助你实现这个约束。条款18”通过撰写码时决定实施设计上的约束条件谈的更多”。<br>2、虽然优秀的编译器不会为”整数型const对象”设定另外的存储空间（除非你创建一个pointer 或 reference指向该对象）不够优秀的编译器却可能如此，而这可能是你不想要的。Enums 和 #define一样绝不会导致非必要的内存分配。<br>3、enum hack 纯粹是为了实用主义。许多代码用了它。它是模板元编程（template metaprogramming）的基础技术。</p>
+<h2 id="3、预处理器的错误用法"><a href="#3、预处理器的错误用法" class="headerlink" title="3、预处理器的错误用法"></a>3、预处理器的错误用法</h2><p>宏函数：看起来像函数，但不会招致函数调用（function call）带来的额外开销。下面这个宏夹带着宏实参。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;以a和b 的较大值调用f</span><br><span class="line">#define CALL_WITH_MAX(a, b) f((a) &gt; (b) ? (a) : (b))</span><br></pre></td></tr></table></figure>
+
+<p>那么多括号，看起来都烦啊。但是宏中的实参必须用括号扩起来，否则别人调用可能会有麻烦。<br>就算加了小括号，还有可能出现不可思议的事情：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">int a  &#x3D; 5, b &#x3D; 0;</span><br><span class="line">CALL_WITH_MAX(++a, b);&#x2F;&#x2F; a 被累加两次</span><br><span class="line">CALL_WITH_MAX(++a, b + 10);  a被累加一次</span><br></pre></td></tr></table></figure>
+
+<p>在这里，调用f之前，a的递增次数竟然取决于”它被拿来和谁比较”！</p>
+<p>幸运的是，我们有办法解决这个问题。你可以获得宏带来的效率以及一般函数所有可能预料行为和类型安全性（type safety）—-只要写出template inline 函数。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;由于我们不知道T是什么，所以采用pass by reference-to-const. 条款20</span><br><span class="line">template&lt;typename T&gt;</span><br><span class="line">inline void callWithMax(const T&amp; a, const T&amp; b) &#123;</span><br><span class="line">  f(a &gt; b ? a : b);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这个tempalte产出一整群函数，每个函数都可以接受两个同类型对象，并以其中较大者调用f。这里不需要在函数本体中为参数加上括号，也不需要操心参数被核算（求值）多次……等等。此外 callWithMax是一个真正的函数，它遵守作用域（scope）和访问规则。<br>你绝对可以写一个”class 内的private inline函数”。一般而言宏无法完成此事。</p>
+<p>有了 const, enum ,inline。我们对预处理器的需求就降低了。<br>但并未完全消除，#include  仍然是必需品，而 #ifdef/#ifndef也继续扮演控制编译器的重要角色。目前还不到预处理器全面隐退的时候。</p>
+<ul>
+<li>对于单纯的常量，最好以cosnt对象或enum 替换#define</li>
+<li>对于形似函数的宏macros, 最好改用 inline 函数替换 #define</li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
       
   
   
@@ -830,7 +968,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">5</span>
+          <span class="site-state-item-count">6</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -892,7 +1030,7 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">16k</span>
+    <span title="站点总字数">19k</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
   </div>
