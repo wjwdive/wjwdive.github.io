@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"jarvissky.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="Effective C++ 条款09:绝对不在构造函数和析构函数中调用virtual函数绝对不在构造函数和析构函数中调用virtual函数 1、引例子假设你有一个 class 继承体系，用来塑膜股市交易如买进、卖出的订单等等。这样的交易一定要经过审计，所以每当创建一个交易对象，在审计日志（audit log）中，也需要创建一笔适当记录。下面看起来颇为合理： 12345678910111213141">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Effective C++ 条款09:绝对不在构造函数和析构函数中调用virtual函数">
+<meta property="og:url" content="http://jarvissky.com/2021/11/26/Effective-C-%E6%9D%A1%E6%AC%BE09-%E7%BB%9D%E5%AF%B9%E4%B8%8D%E5%9C%A8%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0%E5%92%8C%E6%9E%90%E6%9E%84%E5%87%BD%E6%95%B0%E4%B8%AD%E8%B0%83%E7%94%A8virtual%E5%87%BD%E6%95%B0/index.html">
+<meta property="og:site_name" content="Jarvis的天空">
+<meta property="og:description" content="Effective C++ 条款09:绝对不在构造函数和析构函数中调用virtual函数绝对不在构造函数和析构函数中调用virtual函数 1、引例子假设你有一个 class 继承体系，用来塑膜股市交易如买进、卖出的订单等等。这样的交易一定要经过审计，所以每当创建一个交易对象，在审计日志（audit log）中，也需要创建一笔适当记录。下面看起来颇为合理： 12345678910111213141">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-11-26T14:50:35.000Z">
+<meta property="article:modified_time" content="2021-11-26T14:52:12.484Z">
+<meta property="article:author" content="Jarvis">
+<meta property="article:tag" content="effective C++">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://jarvissky.com/2021/11/26/Effective-C-%E6%9D%A1%E6%AC%BE09-%E7%BB%9D%E5%AF%B9%E4%B8%8D%E5%9C%A8%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0%E5%92%8C%E6%9E%90%E6%9E%84%E5%87%BD%E6%95%B0%E4%B8%AD%E8%B0%83%E7%94%A8virtual%E5%87%BD%E6%95%B0/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Effective C++ 条款09:绝对不在构造函数和析构函数中调用virtual函数 | Jarvis的天空</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="Jarvis的天空" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Jarvis的天空</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">闲云野鹤</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">6</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">6</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">14</span></a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container"></div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="algolia-results">
+  <div id="algolia-stats"></div>
+  <div id="algolia-hits"></div>
+  <div id="algolia-pagination" class="algolia-pagination"></div>
+</div>
+
+      
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://jarvissky.com/2021/11/26/Effective-C-%E6%9D%A1%E6%AC%BE09-%E7%BB%9D%E5%AF%B9%E4%B8%8D%E5%9C%A8%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0%E5%92%8C%E6%9E%90%E6%9E%84%E5%87%BD%E6%95%B0%E4%B8%AD%E8%B0%83%E7%94%A8virtual%E5%87%BD%E6%95%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Jarvis">
+      <meta itemprop="description" content="干饭睡觉撸代码">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Jarvis的天空">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Effective C++ 条款09:绝对不在构造函数和析构函数中调用virtual函数
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-11-26 22:50:35 / 修改时间：22:52:12" itemprop="dateCreated datePublished" datetime="2021-11-26T22:50:35+08:00">2021-11-26</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/C/" itemprop="url" rel="index"><span itemprop="name">C++</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/C/effective-c/" itemprop="url" rel="index"><span itemprop="name">effective c++</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2021/11/26/Effective-C-%E6%9D%A1%E6%AC%BE09-%E7%BB%9D%E5%AF%B9%E4%B8%8D%E5%9C%A8%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0%E5%92%8C%E6%9E%90%E6%9E%84%E5%87%BD%E6%95%B0%E4%B8%AD%E8%B0%83%E7%94%A8virtual%E5%87%BD%E6%95%B0/" class="post-meta-item leancloud_visitors" data-flag-title="Effective C++ 条款09:绝对不在构造函数和析构函数中调用virtual函数" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2021/11/26/Effective-C-%E6%9D%A1%E6%AC%BE09-%E7%BB%9D%E5%AF%B9%E4%B8%8D%E5%9C%A8%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0%E5%92%8C%E6%9E%90%E6%9E%84%E5%87%BD%E6%95%B0%E4%B8%AD%E8%B0%83%E7%94%A8virtual%E5%87%BD%E6%95%B0/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/11/26/Effective-C-%E6%9D%A1%E6%AC%BE09-%E7%BB%9D%E5%AF%B9%E4%B8%8D%E5%9C%A8%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0%E5%92%8C%E6%9E%90%E6%9E%84%E5%87%BD%E6%95%B0%E4%B8%AD%E8%B0%83%E7%94%A8virtual%E5%87%BD%E6%95%B0/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>3.9k</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="Effective-C-条款09-绝对不在构造函数和析构函数中调用virtual函数"><a href="#Effective-C-条款09-绝对不在构造函数和析构函数中调用virtual函数" class="headerlink" title="Effective C++ 条款09:绝对不在构造函数和析构函数中调用virtual函数"></a>Effective C++ 条款09:绝对不在构造函数和析构函数中调用virtual函数</h1><p><strong>绝对不在构造函数和析构函数中调用virtual函数</strong></p>
+<h2 id="1、引例子"><a href="#1、引例子" class="headerlink" title="1、引例子"></a>1、引例子</h2><p>假设你有一个 class 继承体系，用来塑膜股市交易如买进、卖出的订单等等。这样的交易一定要经过审计，所以每当创建一个交易对象，在审计日志（audit log）中，也需要创建一笔适当记录。下面看起来颇为合理：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;所有交易的base class </span><br><span class="line">class Transaction &#123;</span><br><span class="line">public:</span><br><span class="line">  Transaction();</span><br><span class="line">  virtual void logTransation() cosnt &#x3D; 0;  &#x2F;&#x2F;做出一份因类型而不同的日志记录（log entry）</span><br><span class="line">  ···</span><br><span class="line">&#125;;</span><br><span class="line">&#x2F;&#x2F;base class 构造函数之实现</span><br><span class="line">Transaction::Transaction() &#123;</span><br><span class="line">  ···</span><br><span class="line">  logTransaction();  &#x2F;&#x2F;最后动作是志记这笔交易</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">class BuyTransation: public Transaction &#123;</span><br><span class="line">public:</span><br><span class="line">  virtual void logTransaction() const;    &#x2F;&#x2F;志记（log）此型交易</span><br><span class="line">  ···</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">calss SellTransation: public Transaction &#123;</span><br><span class="line">public:</span><br><span class="line">  virtual void logTransaction() const; &#x2F;&#x2F;志记（log）此型交易</span><br><span class="line">  ···</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>现在下面这行代码执行会发生什么？</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">BuyTransaction b;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>无疑地会有一个 BuyTransaction 构造函数被调用，但首先 Tranactioin 构造函数一定会跟早被调用；<br>是的，derived class 对象内的base class 成分会在 derived class自身成分被构造之前先构造妥当。<br>Transaction 构造函数的最后一行调用virtual 函数 logTransaction,这正是引发惊奇的起点。<br>这时候被调用的logTransaction 是Transaction 内的版本，不是BuyTransaction 内的版本—即使目前将建立的对象类型是BuyTransacio。是的，base class构造期间 virtual  函数绝不会下降到 derived class阶层。取而代之的是，对象的作用就像隶属base 类型一样。非正式的说法或许比较传神：<strong>在base class 构造期间，virtual 函数不是virtual 函数。</strong></p>
+<span id="more"></span>
+
+
+<p>如果想要在基类构造函数中做一些事情，例如，一旦子类构造函数调用了基类构造函数，子类就在构造函数中记录日志<br>错误的做法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;iostream&gt;</span><br><span class="line">using namespace std;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;交易base class</span><br><span class="line">class Transaction &#123;</span><br><span class="line">public:</span><br><span class="line">    Transaction();</span><br><span class="line">    virtual void logTransaction() const &#x3D; 0;    &#x2F;&#x2F;做出一份因类型不同而不同的日志记录</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;构造函数实现</span><br><span class="line">&#x2F;&#x2F;Call to pure virtual member function &#39;logTransaction&#39; has undefined behavior; overrides of &#39;logTransaction&#39; in subclasses are not available in the constructor of &#39;Transaction&#39;</span><br><span class="line">&#x2F;&#x2F;编译器提示不能在构造函数里面 调用纯虚函数，后导致不明确行为</span><br><span class="line">Transaction::Transaction() &#123;</span><br><span class="line">&#x2F;&#x2F;    logTransaction();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;derived class</span><br><span class="line">class BuyTransaction : public Transaction &#123;</span><br><span class="line">public:</span><br><span class="line">    virtual void logTransaction() const;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;derived class</span><br><span class="line">class SellTransaction: public Transaction &#123;</span><br><span class="line">public:</span><br><span class="line">    virtual void logTransaction() const;    &#x2F;&#x2F;记录log</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">int main(int argc, const char * argv[]) &#123;</span><br><span class="line">    std::cout &lt;&lt; &quot;条款09: 绝不在构造函数和析构函数中调用virtual函数\n&quot;;</span><br><span class="line">    </span><br><span class="line">    BuyTransaction b;</span><br><span class="line"></span><br><span class="line">    </span><br><span class="line">    return 0;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>正确的做法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">&#x2F;&#x2F;解决方法，要想在derived class 创建的时候自动记录日志，可以这样,在class Transaction 内将logTransaction 函数改为non-virtual,然后要求derived class 构造函数传递必要信息给 transactionPro构造函数，而后那个构造函数便可安全地调用 non-virtual logTransactionPro.</span><br><span class="line"></span><br><span class="line">class TransactionPro &#123;</span><br><span class="line">public:</span><br><span class="line">    explicit TransactionPro(const string&amp; logInfo);</span><br><span class="line">    void logTransaction(const string&amp; logInfo) const;   &#x2F;&#x2F; non-virtual 函数</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">TransactionPro::TransactionPro(const string&amp; logInfo) &#123;</span><br><span class="line">    logTransaction(logInfo);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">void TransactionPro::logTransaction(const string&amp; logInfo) const&#123;</span><br><span class="line">    cout&lt;&lt; &quot; logTransaction &quot; &lt;&lt; logInfo &lt;&lt; endl;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class BuyTransactionPro: public TransactionPro &#123;</span><br><span class="line">public:</span><br><span class="line">    &#x2F;&#x2F;子类通过构造时传递参数，使得基类能够在构造时获取该参数（static 函数返回参数的方式）</span><br><span class="line">    BuyTransactionPro(const string&amp; logInfo): TransactionPro(createLogString(logInfo))&#123;</span><br><span class="line">        &#x2F;&#x2F;。。。</span><br><span class="line">    &#125;</span><br><span class="line">private:</span><br><span class="line">    static string createLogString(const string&amp; logInfo);&#x2F;&#x2F;static 函数，保证</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">string BuyTransactionPro::createLogString (const string&amp; logInfo) &#123;</span><br><span class="line">    cout &lt;&lt; &quot; createLogString &quot;&lt;&lt; logInfo &lt;&lt; endl;</span><br><span class="line">    return logInfo;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;由于无法使用virtual函数从 base class 向下调用，在构造期间，你可以藉由“令 derived classes 将必要的构造信息向上传递至 base class  构造函数” 替换之而加以弥补。</span><br><span class="line">&#x2F;&#x2F;本例中 BuyTransaction 内的private static 函数createLogString的运用。比起在成员初值列内给予base class 所需数据，利用辅助函数创建一个 值传给base class 构造函数往往比较方便。令此函数为static,也就不可能意外指向“初期未成熟之 BuyTransaction 对象内尚未初始化的成员变量”。</span><br><span class="line"></span><br><span class="line">int main(int argc, const char * argv[]) &#123;</span><br><span class="line">    std::cout &lt;&lt; &quot;条款09: 绝不在构造函数和析构函数中调用virtual函数\n&quot;;</span><br><span class="line">    </span><br><span class="line">&#x2F;&#x2F;    BuyTransaction b;</span><br><span class="line">    const string&amp; s1(&quot;buyLog&quot;);</span><br><span class="line">    BuyTransactionPro btp(s1);</span><br><span class="line">    </span><br><span class="line">    return 0;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>打印日志：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">条款09: 绝不在构造函数和析构函数中调用virtual函数</span><br><span class="line"> createLogString buyLog</span><br><span class="line"> logTransaction buyLog</span><br><span class="line">Program ended with exit code: 0</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+    </div>
+
+    
+    
+    
+      <div>
+        
+          <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------感谢您的阅读<i class="fa fa-flag"></i>欢迎讨论-------------</div>
+    
+</div>
+        
+      </div>
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/effective-C/" rel="tag"># effective C++</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/11/26/Effective-C-%E6%9D%A1%E6%AC%BE08-%E5%88%AB%E8%AE%A9%E5%BC%82%E5%B8%B8%E9%80%83%E7%A6%BB%E6%9E%90%E6%9E%84%E5%87%BD%E6%95%B0/" rel="prev" title="Effective C++ 条款08:别让异常逃离析构函数">
+      <i class="fa fa-chevron-left"></i> Effective C++ 条款08:别让异常逃离析构函数
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/11/26/Effective-C-%E6%9D%A1%E6%AC%BE10-%E4%BB%A4operator-%E8%BF%94%E5%9B%9E%E4%B8%80%E4%B8%AA-reference-to-this/" rel="next" title="Effective C++ 条款10:令operator=  返回一个 reference to *this">
+      Effective C++ 条款10:令operator=  返回一个 reference to *this <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Effective-C-%E6%9D%A1%E6%AC%BE09-%E7%BB%9D%E5%AF%B9%E4%B8%8D%E5%9C%A8%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0%E5%92%8C%E6%9E%90%E6%9E%84%E5%87%BD%E6%95%B0%E4%B8%AD%E8%B0%83%E7%94%A8virtual%E5%87%BD%E6%95%B0"><span class="nav-number">1.</span> <span class="nav-text">Effective C++ 条款09:绝对不在构造函数和析构函数中调用virtual函数</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1%E3%80%81%E5%BC%95%E4%BE%8B%E5%AD%90"><span class="nav-number">1.1.</span> <span class="nav-text">1、引例子</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Jarvis"
+      src="/images/avatar.gif">
+  <p class="site-author-name" itemprop="name">Jarvis</p>
+  <div class="site-description" itemprop="description">干饭睡觉撸代码</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">14</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://www.github.com/wjwdive" title="GitHub → https:&#x2F;&#x2F;www.github.com&#x2F;wjwdive" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:jarvissky@163.com" title="E-Mail → mailto:jarvissky@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">null </a>
+      <img src="/images/beian.png" style="display: inline-block;"><a href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=2021009233" rel="noopener" target="_blank">沪ICP备2021009233号-1 </a>
+  </div>
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Jarvis</span>
+
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">50k</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="//cdn.jsdelivr.net/npm/algoliasearch@4/dist/algoliasearch-lite.umd.js"></script>
+<script src="//cdn.jsdelivr.net/npm/instantsearch.js@4/dist/instantsearch.production.min.js"></script>
+<script src="/js/algolia-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : 'MXtrA2biGG8FzjWmPUUrCXPl-9Nh9j0Va',
+      appKey     : '5ABrVsKIAfCv40vYhWRu5E9f',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : true,
+      lang       : 'zh-cn' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : true,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>

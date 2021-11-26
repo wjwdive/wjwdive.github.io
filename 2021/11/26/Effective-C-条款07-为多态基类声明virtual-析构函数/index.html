@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"jarvissky.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="C++实现多态的时候经常用的一招是父类指针指向子类对象，在继承关系中可能出现错误。1、基类的析构函数不是虚函数时候可能会有子类实例对象不被完全销毁的问题出现C++ 明确指出：当派生类对象经由一个base calss 指针被删除，而该base class 带着一个non-virtual 析构函数，其结果未有定义–实际执行时通常繁盛的是对象的派生成分没有被销毁。也就是这样做派生类的成员变量很可能没有被">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Effective C++ 条款07:为多态基类声明virtual 析构函数">
+<meta property="og:url" content="http://jarvissky.com/2021/11/26/Effective-C-%E6%9D%A1%E6%AC%BE07-%E4%B8%BA%E5%A4%9A%E6%80%81%E5%9F%BA%E7%B1%BB%E5%A3%B0%E6%98%8Evirtual-%E6%9E%90%E6%9E%84%E5%87%BD%E6%95%B0/index.html">
+<meta property="og:site_name" content="Jarvis的天空">
+<meta property="og:description" content="C++实现多态的时候经常用的一招是父类指针指向子类对象，在继承关系中可能出现错误。1、基类的析构函数不是虚函数时候可能会有子类实例对象不被完全销毁的问题出现C++ 明确指出：当派生类对象经由一个base calss 指针被删除，而该base class 带着一个non-virtual 析构函数，其结果未有定义–实际执行时通常繁盛的是对象的派生成分没有被销毁。也就是这样做派生类的成员变量很可能没有被">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-11-26T14:47:32.000Z">
+<meta property="article:modified_time" content="2021-11-26T14:49:51.920Z">
+<meta property="article:author" content="Jarvis">
+<meta property="article:tag" content="effective C++">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://jarvissky.com/2021/11/26/Effective-C-%E6%9D%A1%E6%AC%BE07-%E4%B8%BA%E5%A4%9A%E6%80%81%E5%9F%BA%E7%B1%BB%E5%A3%B0%E6%98%8Evirtual-%E6%9E%90%E6%9E%84%E5%87%BD%E6%95%B0/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Effective C++ 条款07:为多态基类声明virtual 析构函数 | Jarvis的天空</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="Jarvis的天空" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Jarvis的天空</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">闲云野鹤</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">6</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">6</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">14</span></a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container"></div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="algolia-results">
+  <div id="algolia-stats"></div>
+  <div id="algolia-hits"></div>
+  <div id="algolia-pagination" class="algolia-pagination"></div>
+</div>
+
+      
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://jarvissky.com/2021/11/26/Effective-C-%E6%9D%A1%E6%AC%BE07-%E4%B8%BA%E5%A4%9A%E6%80%81%E5%9F%BA%E7%B1%BB%E5%A3%B0%E6%98%8Evirtual-%E6%9E%90%E6%9E%84%E5%87%BD%E6%95%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Jarvis">
+      <meta itemprop="description" content="干饭睡觉撸代码">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Jarvis的天空">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Effective C++ 条款07:为多态基类声明virtual 析构函数
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-11-26 22:47:32 / 修改时间：22:49:51" itemprop="dateCreated datePublished" datetime="2021-11-26T22:47:32+08:00">2021-11-26</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/C/" itemprop="url" rel="index"><span itemprop="name">C++</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/C/effective-c/" itemprop="url" rel="index"><span itemprop="name">effective c++</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2021/11/26/Effective-C-%E6%9D%A1%E6%AC%BE07-%E4%B8%BA%E5%A4%9A%E6%80%81%E5%9F%BA%E7%B1%BB%E5%A3%B0%E6%98%8Evirtual-%E6%9E%90%E6%9E%84%E5%87%BD%E6%95%B0/" class="post-meta-item leancloud_visitors" data-flag-title="Effective C++ 条款07:为多态基类声明virtual 析构函数" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2021/11/26/Effective-C-%E6%9D%A1%E6%AC%BE07-%E4%B8%BA%E5%A4%9A%E6%80%81%E5%9F%BA%E7%B1%BB%E5%A3%B0%E6%98%8Evirtual-%E6%9E%90%E6%9E%84%E5%87%BD%E6%95%B0/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/11/26/Effective-C-%E6%9D%A1%E6%AC%BE07-%E4%B8%BA%E5%A4%9A%E6%80%81%E5%9F%BA%E7%B1%BB%E5%A3%B0%E6%98%8Evirtual-%E6%9E%90%E6%9E%84%E5%87%BD%E6%95%B0/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>3.6k</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="C-实现多态的时候经常用的一招是父类指针指向子类对象，在继承关系中可能出现错误。"><a href="#C-实现多态的时候经常用的一招是父类指针指向子类对象，在继承关系中可能出现错误。" class="headerlink" title="C++实现多态的时候经常用的一招是父类指针指向子类对象，在继承关系中可能出现错误。"></a>C++实现多态的时候经常用的一招是父类指针指向子类对象，在继承关系中可能出现错误。</h1><h3 id="1、基类的析构函数不是虚函数时候可能会有子类实例对象不被完全销毁的问题出现"><a href="#1、基类的析构函数不是虚函数时候可能会有子类实例对象不被完全销毁的问题出现" class="headerlink" title="1、基类的析构函数不是虚函数时候可能会有子类实例对象不被完全销毁的问题出现"></a>1、基类的析构函数不是虚函数时候可能会有子类实例对象不被完全销毁的问题出现</h3><p>C++ 明确指出：当派生类对象经由一个base calss 指针被删除，而该base class 带着一个non-virtual 析构函数，其结果未有定义–实际执行时通常繁盛的是对象的派生成分没有被销毁。也就是这样做派生类的成员变量很可能没有被销毁，而派生类的析构函数也没有执行。但是基类的成分，通常被销毁，于是造成诡异的局部销毁对象。这可能造成资源泄漏、败坏数据结构，在调试器上浪费许多时间。<br>消除这个问题的做法很简单：就是给 base class 一个虚析构函数。此后删除derived class 对象就会如你想要的那般，它会销毁整个对象，包括所有的derived class成分。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">TimeKeeper</span> &#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">  <span class="built_in">TimeKeeper</span>();</span><br><span class="line">  <span class="keyword">virtual</span> ~<span class="built_in">TimeKeeper</span>();  <span class="comment">//base class  声明虚析构函数</span></span><br><span class="line">&#125;;</span><br><span class="line">TimerKeeper *ptk = <span class="built_in">getTimeKeeper</span>();</span><br><span class="line">···</span><br><span class="line"><span class="keyword">delete</span> ptk;</span><br></pre></td></tr></table></figure>
+
+<p>像TimerKeeper 这样的base classes 除了析构函数之外，通常还有其他 virtual函数，因为virtual函数的目的是允许 derived class 的实现得以客制化【34】。<br>例如 TimerKeeper 可能拥有一个 virtual getCurrentTime, 它在不同的 derived class 中 有不同的实现代码。任何class 只要带有 virtual函数几乎确定应该也有一个 virtual 析构阿函数。</p>
+<span id="more"></span>
+
+<h3 id="2、永远令析构函数为虚函数也在和C语言切换的时候也会出问题"><a href="#2、永远令析构函数为虚函数也在和C语言切换的时候也会出问题" class="headerlink" title="2、永远令析构函数为虚函数也在和C语言切换的时候也会出问题"></a>2、永远令析构函数为虚函数也在和C语言切换的时候也会出问题</h3><p>如果class 不含 virtual 函数，通常表示它并不意图被用做一个 base class。当 class不被当作base class，令其析构函数 为virtual往往是一个馊主意。<br>例如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">class Point &#123;</span><br><span class="line">public:</span><br><span class="line">  Point(int xCoord, int yCoord);</span><br><span class="line">  ~Point();</span><br><span class="line">private:</span><br><span class="line">  int x, y;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>如果 int 占用 32bits,那么 Point 对象可塞入一个 64-bit 缓存器中。更有甚者，这样一个Point对象可能被当作一个 “64-bit量”传给其他语言，如C 或者 FORTRAN撰写的函数。然而，当Point的析构函数是virtual ，形势起了变化。</p>
+<p>欲实现出virtual函数，对象必须携带某些信息，主要用来在运行期决定哪一个virtual 函数被调用。这份信息通常是由一个所谓vptr（virtual table pointer）指针指出。<br>vprt只想一个由函数指针构成的数组，称为 vtbl(virtual table);每一个带有virtual 函数的class都有一个相应的vtbl.当对象调用某一virtual函数，实际被调用的函数取决于该对象的vptr所指的那个vtbl—-编译器在其中寻找适当的函数指针。</p>
+<p>如果Point class内含virtual函数，其对象的体积会增加：在 32-bit 计算机体系结构中将占用 64bits（为了存放两个int）至 96 bits（两个int + vptr）;<br>在64-bit计算机体系结构中可能占用64～128bits， 因为指针在这样的计算机结构中占64-bits.因此，为Point添加一个vprt会增加对象大小达50%～100%！Point对象不能再能够塞入一个 64-bits的缓存器，而C++的Point对象也不再和其他语言如C,内的相同声明有着一样的结构（因为其他语言的对应物并没有vptr），因此也就不能再可能把它传递至（或接受自）其他语言所写的函数，除非你明确补偿vprt—-那属于实现细节，也因此不再具有移植性。</p>
+<p>因此，无端地将所有classes的析构函数声明为virtual，就像未声明他们为virtual一样，都是错误的。许多人的心得是：只有当class内含至少一个virtual函数，才为它声明virtual析构函数。</p>
+<h3 id="3、即使class完全不带virtual函数，被non-virtual析构函数问题折腾还是有可能的"><a href="#3、即使class完全不带virtual函数，被non-virtual析构函数问题折腾还是有可能的" class="headerlink" title="3、即使class完全不带virtual函数，被non-virtual析构函数问题折腾还是有可能的"></a>3、即使class完全不带virtual函数，被non-virtual析构函数问题折腾还是有可能的</h3><p>例如： 标准string不含任何virtual函数，但有时候程序员会错误的把它当作base class</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;馊主意！std::string 有个 non-virtual析构函数</span><br><span class="line">class SpecialString: public std::string &#123;</span><br><span class="line"></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>这样看似没有问题，但是如果你这样做，无意间将一个 pointer-to-SpecialString转换为一个 pointer-to-string，然后将转换所得的那个string指针delete掉，你立刻被流放到”行为不明确”的冥界。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">SpecialString *sps &#x3D; new SpecialString(&quot;Impending Doom&quot;);</span><br><span class="line">std:: sgtring *ps;</span><br><span class="line">···</span><br><span class="line">ps &#x3D; pps;  &#x2F;&#x2F;SpecialString * &#x3D;&gt; std::string*</span><br><span class="line">···</span><br><span class="line">delete ps;  &#x2F;&#x2F;未有定义！现实中 *ps 的 SpecialString 资源会泄漏，因为SpecialString 析构函数没有被调用</span><br></pre></td></tr></table></figure>
+<p>相同的分析适用于任何不带virtual 析构函数的class,包括 STL 容器如： vector, list, set, trl::unordered_map【54】等等。如果你曾经企图继承一个标准容器或者其他任何”带有non-virtual析构函数”的class，拒绝诱惑，C++没有类似java的final classes 或 sealed classes那样的”禁止派生”机制。</p>
+<p>有时候class带一个 pure virtual函数，可能颇为顺利。还记得吗？pure virtual 函数导致abstract (抽象)classes —-也就是不能被实体化（instantiated）的class。<br>也就是说，你不能为那种类型创建对象。然而有时候你希望拥有抽象class，但手上没有任何pure virtual函数，怎么办。由于抽象class总是企图被当作一个base class来用，因此解法很简单： 为你希望他成为抽象的那个class 声明一个 pure virtual析构函数。具体例子：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;Abstract Virtuals</span><br><span class="line">class AWOV &#123;</span><br><span class="line">public:</span><br><span class="line">  virtual ~AWOV() &#x3D; 0;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>这个class 又一个pure virtual 函数，所以它是个抽象class, 又由于它有个 virtual 析构函数，所以你不需要担心析构函数的问题。然而这里又有一个窍门：你必须为这个pure virtual 析构函数提供一份定义：<br>AWOV::~AWOV() {};//pure virtual 析构函数的定义<br>析构函数的运作方式是，最深层派生（魔术贴 derived）的那个class 起析构函数是先被调用，然后其每一base class 的析构函数被调用。编译器会在 AWOV的derived class的析构函数中常见一个对～AWOV()的调用动作，所以你必须为这个函数提供一份定义。如果不这样做，连接器会发生抱怨。</p>
+<p>“给base classes 一个 virtual 析构函数”，这个规则只适用于polymorphic(带多太性质的)base classes身上。这种base classes的设计目的是为了用来””通过base class 接口处理 derived class 对象”。TimeKeeper 就是一个 polymorphic base class,因为我们希望处理 AtomincClock 和 WaterClock 对象，纵使我们只有timeKeeper 指针指向它们。</p>
+<p>并非所有的base classes的设计目的都是为了多态用途。例如 string和STL 容器都不被设计作为base classes使用，更别提多态的。某些classes的设计目的是作为base classes使用，但不是为了多态用途。这样的classes如【条款6】的Uncopyable和标准程序库的input_iterator_tag(【条款47】)，它们并非被设计用来”经由base class”接口处置 derived class 对象，因此他们不需要virtual 析构函数。</p>
+<p>-多态性质的base classes 应该声明一个virtual析构函数，如果class带有任何virtual函数，它就应该拥有一个virtual析构函数。<br>-Classes的设计目的如果不是作为base classes使用，或不是为了具备多台性质，就不该声明为virtual析构函数。</p>
+
+    </div>
+
+    
+    
+    
+      <div>
+        
+          <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------感谢您的阅读<i class="fa fa-flag"></i>欢迎讨论-------------</div>
+    
+</div>
+        
+      </div>
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/effective-C/" rel="tag"># effective C++</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/11/26/Effective-C-%E6%9D%A1%E6%AC%BE06-%E8%8B%A5%E4%B8%8D%E6%83%B3%E4%BD%BF%E7%94%A8%E7%BC%96%E8%AF%91%E5%99%A8%E8%87%AA%E5%8A%A8%E7%94%9F%E6%88%90%E7%9A%84%E5%87%BD%E6%95%B0%EF%BC%8C%E5%B0%B1%E8%AF%A5%E6%98%8E%E7%A1%AE%E6%8B%92%E7%BB%9D/" rel="prev" title="Effective C++ 条款06:若不想使用编译器自动生成的函数，就该明确拒绝">
+      <i class="fa fa-chevron-left"></i> Effective C++ 条款06:若不想使用编译器自动生成的函数，就该明确拒绝
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/11/26/Effective-C-%E6%9D%A1%E6%AC%BE08-%E5%88%AB%E8%AE%A9%E5%BC%82%E5%B8%B8%E9%80%83%E7%A6%BB%E6%9E%90%E6%9E%84%E5%87%BD%E6%95%B0/" rel="next" title="Effective C++ 条款08:别让异常逃离析构函数">
+      Effective C++ 条款08:别让异常逃离析构函数 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#C-%E5%AE%9E%E7%8E%B0%E5%A4%9A%E6%80%81%E7%9A%84%E6%97%B6%E5%80%99%E7%BB%8F%E5%B8%B8%E7%94%A8%E7%9A%84%E4%B8%80%E6%8B%9B%E6%98%AF%E7%88%B6%E7%B1%BB%E6%8C%87%E9%92%88%E6%8C%87%E5%90%91%E5%AD%90%E7%B1%BB%E5%AF%B9%E8%B1%A1%EF%BC%8C%E5%9C%A8%E7%BB%A7%E6%89%BF%E5%85%B3%E7%B3%BB%E4%B8%AD%E5%8F%AF%E8%83%BD%E5%87%BA%E7%8E%B0%E9%94%99%E8%AF%AF%E3%80%82"><span class="nav-number">1.</span> <span class="nav-text">C++实现多态的时候经常用的一招是父类指针指向子类对象，在继承关系中可能出现错误。</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1%E3%80%81%E5%9F%BA%E7%B1%BB%E7%9A%84%E6%9E%90%E6%9E%84%E5%87%BD%E6%95%B0%E4%B8%8D%E6%98%AF%E8%99%9A%E5%87%BD%E6%95%B0%E6%97%B6%E5%80%99%E5%8F%AF%E8%83%BD%E4%BC%9A%E6%9C%89%E5%AD%90%E7%B1%BB%E5%AE%9E%E4%BE%8B%E5%AF%B9%E8%B1%A1%E4%B8%8D%E8%A2%AB%E5%AE%8C%E5%85%A8%E9%94%80%E6%AF%81%E7%9A%84%E9%97%AE%E9%A2%98%E5%87%BA%E7%8E%B0"><span class="nav-number">1.0.1.</span> <span class="nav-text">1、基类的析构函数不是虚函数时候可能会有子类实例对象不被完全销毁的问题出现</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2%E3%80%81%E6%B0%B8%E8%BF%9C%E4%BB%A4%E6%9E%90%E6%9E%84%E5%87%BD%E6%95%B0%E4%B8%BA%E8%99%9A%E5%87%BD%E6%95%B0%E4%B9%9F%E5%9C%A8%E5%92%8CC%E8%AF%AD%E8%A8%80%E5%88%87%E6%8D%A2%E7%9A%84%E6%97%B6%E5%80%99%E4%B9%9F%E4%BC%9A%E5%87%BA%E9%97%AE%E9%A2%98"><span class="nav-number">1.0.2.</span> <span class="nav-text">2、永远令析构函数为虚函数也在和C语言切换的时候也会出问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3%E3%80%81%E5%8D%B3%E4%BD%BFclass%E5%AE%8C%E5%85%A8%E4%B8%8D%E5%B8%A6virtual%E5%87%BD%E6%95%B0%EF%BC%8C%E8%A2%ABnon-virtual%E6%9E%90%E6%9E%84%E5%87%BD%E6%95%B0%E9%97%AE%E9%A2%98%E6%8A%98%E8%85%BE%E8%BF%98%E6%98%AF%E6%9C%89%E5%8F%AF%E8%83%BD%E7%9A%84"><span class="nav-number">1.0.3.</span> <span class="nav-text">3、即使class完全不带virtual函数，被non-virtual析构函数问题折腾还是有可能的</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Jarvis"
+      src="/images/avatar.gif">
+  <p class="site-author-name" itemprop="name">Jarvis</p>
+  <div class="site-description" itemprop="description">干饭睡觉撸代码</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">14</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://www.github.com/wjwdive" title="GitHub → https:&#x2F;&#x2F;www.github.com&#x2F;wjwdive" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:jarvissky@163.com" title="E-Mail → mailto:jarvissky@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">null </a>
+      <img src="/images/beian.png" style="display: inline-block;"><a href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=2021009233" rel="noopener" target="_blank">沪ICP备2021009233号-1 </a>
+  </div>
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Jarvis</span>
+
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">50k</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="//cdn.jsdelivr.net/npm/algoliasearch@4/dist/algoliasearch-lite.umd.js"></script>
+<script src="//cdn.jsdelivr.net/npm/instantsearch.js@4/dist/instantsearch.production.min.js"></script>
+<script src="/js/algolia-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : 'MXtrA2biGG8FzjWmPUUrCXPl-9Nh9j0Va',
+      appKey     : '5ABrVsKIAfCv40vYhWRu5E9f',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : true,
+      lang       : 'zh-cn' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : true,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>

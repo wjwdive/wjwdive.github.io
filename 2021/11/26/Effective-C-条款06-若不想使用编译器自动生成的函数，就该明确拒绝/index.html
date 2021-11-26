@@ -20,21 +20,20 @@
     var CONFIG = {"hostname":"jarvissky.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="swift 可选值1、背景swift 是苹果的二儿子，和大儿子OC比起来有很多优势，他更加接近现代编程语言的范式，类似解释语言的语法习惯，却是名副其实的强类型语言。接触最初就会遇到一个swift和OC明显不同的数据类型，可选值 | Optional Value。 中文翻译直接理解的话就是可以选来用也可以不选。个人认为把他理解为未定型更合符合普通的思维习惯,有点像JavaScript中的未定型。">
+  <meta name="description" content="Effective C++ 条款06:若不想使用编译器自动生成的函数，就该明确拒绝1、如何禁止编译器自动生成复制构造函数有些时候，我们需要的对象全局只保留一份。那么我们设计类的时候就不能让该类支持复制出另一个出来。例如：一个地产中介软件系统中，必有一个class 用来描述代售房屋： 1class HomeForSale&amp;#123;  ···   &amp;#125;; 该类逻辑上就不能被拷贝。 1234H">
 <meta property="og:type" content="article">
-<meta property="og:title" content="swift 可选值">
-<meta property="og:url" content="http://jarvissky.com/2021/04/04/swift-%E5%8F%AF%E9%80%89%E5%80%BC/index.html">
+<meta property="og:title" content="Effective C++ 条款06:若不想使用编译器自动生成的函数，就该明确拒绝">
+<meta property="og:url" content="http://jarvissky.com/2021/11/26/Effective-C-%E6%9D%A1%E6%AC%BE06-%E8%8B%A5%E4%B8%8D%E6%83%B3%E4%BD%BF%E7%94%A8%E7%BC%96%E8%AF%91%E5%99%A8%E8%87%AA%E5%8A%A8%E7%94%9F%E6%88%90%E7%9A%84%E5%87%BD%E6%95%B0%EF%BC%8C%E5%B0%B1%E8%AF%A5%E6%98%8E%E7%A1%AE%E6%8B%92%E7%BB%9D/index.html">
 <meta property="og:site_name" content="Jarvis的天空">
-<meta property="og:description" content="swift 可选值1、背景swift 是苹果的二儿子，和大儿子OC比起来有很多优势，他更加接近现代编程语言的范式，类似解释语言的语法习惯，却是名副其实的强类型语言。接触最初就会遇到一个swift和OC明显不同的数据类型，可选值 | Optional Value。 中文翻译直接理解的话就是可以选来用也可以不选。个人认为把他理解为未定型更合符合普通的思维习惯,有点像JavaScript中的未定型。">
+<meta property="og:description" content="Effective C++ 条款06:若不想使用编译器自动生成的函数，就该明确拒绝1、如何禁止编译器自动生成复制构造函数有些时候，我们需要的对象全局只保留一份。那么我们设计类的时候就不能让该类支持复制出另一个出来。例如：一个地产中介软件系统中，必有一个class 用来描述代售房屋： 1class HomeForSale&amp;#123;  ···   &amp;#125;; 该类逻辑上就不能被拷贝。 1234H">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2021-04-04T09:10:51.000Z">
-<meta property="article:modified_time" content="2021-04-05T06:22:18.001Z">
+<meta property="article:published_time" content="2021-11-26T14:46:10.000Z">
+<meta property="article:modified_time" content="2021-11-26T14:49:45.925Z">
 <meta property="article:author" content="Jarvis">
-<meta property="article:tag" content="swift">
-<meta property="article:tag" content="可选值">
+<meta property="article:tag" content="effective C++">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="http://jarvissky.com/2021/04/04/swift-%E5%8F%AF%E9%80%89%E5%80%BC/">
+<link rel="canonical" href="http://jarvissky.com/2021/11/26/Effective-C-%E6%9D%A1%E6%AC%BE06-%E8%8B%A5%E4%B8%8D%E6%83%B3%E4%BD%BF%E7%94%A8%E7%BC%96%E8%AF%91%E5%99%A8%E8%87%AA%E5%8A%A8%E7%94%9F%E6%88%90%E7%9A%84%E5%87%BD%E6%95%B0%EF%BC%8C%E5%B0%B1%E8%AF%A5%E6%98%8E%E7%A1%AE%E6%8B%92%E7%BB%9D/">
 
 
 <script id="page-configurations">
@@ -47,7 +46,7 @@
   };
 </script>
 
-  <title>swift 可选值 | Jarvis的天空</title>
+  <title>Effective C++ 条款06:若不想使用编译器自动生成的函数，就该明确拒绝 | Jarvis的天空</title>
   
 
 
@@ -194,7 +193,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://jarvissky.com/2021/04/04/swift-%E5%8F%AF%E9%80%89%E5%80%BC/">
+    <link itemprop="mainEntityOfPage" href="http://jarvissky.com/2021/11/26/Effective-C-%E6%9D%A1%E6%AC%BE06-%E8%8B%A5%E4%B8%8D%E6%83%B3%E4%BD%BF%E7%94%A8%E7%BC%96%E8%AF%91%E5%99%A8%E8%87%AA%E5%8A%A8%E7%94%9F%E6%88%90%E7%9A%84%E5%87%BD%E6%95%B0%EF%BC%8C%E5%B0%B1%E8%AF%A5%E6%98%8E%E7%A1%AE%E6%8B%92%E7%BB%9D/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -207,7 +206,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          swift 可选值
+          Effective C++ 条款06:若不想使用编译器自动生成的函数，就该明确拒绝
         </h1>
 
         <div class="post-meta">
@@ -216,32 +215,26 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
+              
 
-              <time title="创建时间：2021-04-04 17:10:51" itemprop="dateCreated datePublished" datetime="2021-04-04T17:10:51+08:00">2021-04-04</time>
+              <time title="创建时间：2021-11-26 22:46:10 / 修改时间：22:49:45" itemprop="dateCreated datePublished" datetime="2021-11-26T22:46:10+08:00">2021-11-26</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-04-05 14:22:18" itemprop="dateModified" datetime="2021-04-05T14:22:18+08:00">2021-04-05</time>
-              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/iOS/" itemprop="url" rel="index"><span itemprop="name">iOS</span></a>
+                  <a href="/categories/C/" itemprop="url" rel="index"><span itemprop="name">C++</span></a>
                 </span>
                   ，
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/iOS/swift/" itemprop="url" rel="index"><span itemprop="name">swift</span></a>
+                  <a href="/categories/C/effective-c/" itemprop="url" rel="index"><span itemprop="name">effective c++</span></a>
                 </span>
             </span>
 
           
-            <span id="/2021/04/04/swift-%E5%8F%AF%E9%80%89%E5%80%BC/" class="post-meta-item leancloud_visitors" data-flag-title="swift 可选值" title="阅读次数">
+            <span id="/2021/11/26/Effective-C-%E6%9D%A1%E6%AC%BE06-%E8%8B%A5%E4%B8%8D%E6%83%B3%E4%BD%BF%E7%94%A8%E7%BC%96%E8%AF%91%E5%99%A8%E8%87%AA%E5%8A%A8%E7%94%9F%E6%88%90%E7%9A%84%E5%87%BD%E6%95%B0%EF%BC%8C%E5%B0%B1%E8%AF%A5%E6%98%8E%E7%A1%AE%E6%8B%92%E7%BB%9D/" class="post-meta-item leancloud_visitors" data-flag-title="Effective C++ 条款06:若不想使用编译器自动生成的函数，就该明确拒绝" title="阅读次数">
               <span class="post-meta-item-icon">
                 <i class="fa fa-eye"></i>
               </span>
@@ -256,8 +249,8 @@
       </span>
       <span class="post-meta-item-text">Valine：</span>
     
-    <a title="valine" href="/2021/04/04/swift-%E5%8F%AF%E9%80%89%E5%80%BC/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2021/04/04/swift-%E5%8F%AF%E9%80%89%E5%80%BC/" itemprop="commentCount"></span>
+    <a title="valine" href="/2021/11/26/Effective-C-%E6%9D%A1%E6%AC%BE06-%E8%8B%A5%E4%B8%8D%E6%83%B3%E4%BD%BF%E7%94%A8%E7%BC%96%E8%AF%91%E5%99%A8%E8%87%AA%E5%8A%A8%E7%94%9F%E6%88%90%E7%9A%84%E5%87%BD%E6%95%B0%EF%BC%8C%E5%B0%B1%E8%AF%A5%E6%98%8E%E7%A1%AE%E6%8B%92%E7%BB%9D/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/11/26/Effective-C-%E6%9D%A1%E6%AC%BE06-%E8%8B%A5%E4%B8%8D%E6%83%B3%E4%BD%BF%E7%94%A8%E7%BC%96%E8%AF%91%E5%99%A8%E8%87%AA%E5%8A%A8%E7%94%9F%E6%88%90%E7%9A%84%E5%87%BD%E6%95%B0%EF%BC%8C%E5%B0%B1%E8%AF%A5%E6%98%8E%E7%A1%AE%E6%8B%92%E7%BB%9D/" itemprop="commentCount"></span>
     </a>
   </span>
   
@@ -267,7 +260,7 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>421</span>
+              <span>2k</span>
             </span>
 
         </div>
@@ -279,14 +272,25 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="swift-可选值"><a href="#swift-可选值" class="headerlink" title="swift 可选值"></a>swift 可选值</h1><h2 id="1、背景"><a href="#1、背景" class="headerlink" title="1、背景"></a>1、背景</h2><p>swift 是苹果的二儿子，和大儿子OC比起来有很多优势，他更加接近现代编程语言的范式，类似解释语言的语法习惯，却是名副其实的强类型语言。接触最初就会遇到一个swift和OC明显不同的数据类型，<strong>可选值 | Optional Value</strong>。</p>
-<p>中文翻译直接理解的话就是可以选来用也可以不选。个人认为把他理解为未定型更合符合普通的思维习惯,有点像JavaScript中的未定型。</p>
- <span id="more"></span>
+        <h1 id="Effective-C-条款06-若不想使用编译器自动生成的函数，就该明确拒绝"><a href="#Effective-C-条款06-若不想使用编译器自动生成的函数，就该明确拒绝" class="headerlink" title="Effective C++ 条款06:若不想使用编译器自动生成的函数，就该明确拒绝"></a>Effective C++ 条款06:若不想使用编译器自动生成的函数，就该明确拒绝</h1><h2 id="1、如何禁止编译器自动生成复制构造函数"><a href="#1、如何禁止编译器自动生成复制构造函数" class="headerlink" title="1、如何禁止编译器自动生成复制构造函数"></a>1、如何禁止编译器自动生成复制构造函数</h2><p>有些时候，我们需要的对象全局只保留一份。那么我们设计类的时候就不能让该类支持复制出另一个出来。<br>例如：一个地产中介软件系统中，必有一个class 用来描述代售房屋：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">class HomeForSale&#123;  ···   &#125;;</span><br></pre></td></tr></table></figure>
+<p>该类逻辑上就不能被拷贝。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">HomeForSale h1;</span><br><span class="line">HomeForSale h2;</span><br><span class="line">HomeForSale h3(h1);      &#x2F;&#x2F;企图拷贝h1-- 不应该通过编译</span><br><span class="line">h1 &#x3D; h2;                        &#x2F;&#x2F;企图拷贝h2-- 不应该通过编译</span><br></pre></td></tr></table></figure>
+<h3 id="1-1-我们该如何阻止编译器合成拷贝构造函数？"><a href="#1-1-我们该如何阻止编译器合成拷贝构造函数？" class="headerlink" title="1.1 我们该如何阻止编译器合成拷贝构造函数？"></a>1.1 我们该如何阻止编译器合成拷贝构造函数？</h3><p>由于C++会自动合成四个基本函数，所以我们就算不声明拷贝构造函数，编译器也会自动给合成。<br>我们该如何阻止内？<br>由于所有编译器产出的函数都是public。为阻止这些函数被创建出来，你得自行声明他们，但这里并没有什么需求使你必须将他们声明为public。<br>因此你可以将 copy 构造函数 或 copy assignment 操作符声明为 private。<br>这样，籍由明确声明一个成员函数就阻止了编译器自创其专属版本，而且令这些函数为private,使你得以成功阻止人们调用它。</p>
+<span id="more"></span>
 
-<p>我们可以这样声明一个可选值：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">var name : String?</span><br></pre></td></tr></table></figure>
-<p>用标识符var 声明一个变量 name ，后面的？表示它是一个可选值。在后续使用中它的值可能是字符串 “张三”。也可能是一个空值 nil 。</p>
-<p>这里有一点和OC不同的是，OC中的基本数据类型都会有默认的初始值，例如 NSInter 默认为0，CGFloat 默认为 0.0。但是swift里由于可选值概念的存在，基础数据类型（int, double, bool）没有值时也可以是nil.<br>一个可选值没有初始值的话是不可以使用的。</p>
+<h3 id="1-2-private-的局限"><a href="#1-2-private-的局限" class="headerlink" title="1.2 private 的局限"></a>1.2 private 的局限</h3><p>一般来说，这个做法并不绝对安全，因为 member 函数 和 friend函数还是可以调用 你的private函数。如果有人不慎调用任何一个，会获得一个连接错误（linkage error）。<br><strong>将成员函数声明为private 而且故意不实现他们</strong> 这一伎俩是如此被大众接受，因而被用在C++  iostream 程序库中阻止copying 行为。<br>例如，很多标准程序库的实现代码中， ios_base, basic_ios和sentry。都会发现，其copy 构造函数和 copy assignment 操作符都被声明为 private,而且没有定义。</p>
+<p>对HomeForSale类</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">class HomeForSale &#123;</span><br><span class="line">public:</span><br><span class="line">  ···</span><br><span class="line">private:</span><br><span class="line">  ···</span><br><span class="line">  HomeForSale(const HomeForSale&amp;);                &#x2F;&#x2F;只有声明</span><br><span class="line">  HomeForSale&amp; operator&#x3D;(const HomeForSale&amp;);</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>上例子没有写函数的参数名称。不被实现的情况下，可以这样写。<br>有了上述class 定义，当客户企图拷贝 HomeForSale对象，编译器阻止这一行为。如果你不慎在member函数或friend函数之内那么做，轮到连接器发出抱怨。</p>
+<p>将连接器错误移至编译期是可能的（而且那是好事，毕竟越早发现错误越好），只要将copy构造函数和 copy assignment 操作符声明为private就可以办到，但不是在 HomeForSale 自身，而是专门设计一个base class阻止copying 动作。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">class Uncopyable &#123;</span><br><span class="line">protected:        &#x2F;&#x2F;允许derived对象的构造和析构</span><br><span class="line">  Uncopyable()&#123;&#125;</span><br><span class="line">  ~Uncopyable()&#123;&#125;</span><br><span class="line">private:</span><br><span class="line">  Uncopyable(const Uncopyable&amp;);  &#x2F;&#x2F;阻止copying</span><br><span class="line">  Uncopyable&amp; operator&#x3D;(const Uncopyable&amp;);</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>为阻止 HomeForSale对象被拷贝，我们唯一需要做的就是继承Uncopyable</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">class HomeForSale: private Uncopyable &#123;</span><br><span class="line">&#x2F;&#x2F;class 不再声明copy构造函数或copy assign操作符</span><br><span class="line">···</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>这样行得通，只要任何人—-甚至是member 函数或friend函数—-尝试拷贝HomeForSale对象，编译器便试着生成一个copy 构造函数和一个 copy assignment 操作符。</p>
+<p>Uncopyable class 的实现和运用颇为微妙，包括不一定得以public  继承它，以及Uncopyable的析构 函数不一定是virtual等等。<br>Uncopyable不含数据，这符合条款39所描述的 empty base class optimization资格。<br>但是由于它总是扮演base class, 因此使用这项技术可能导致多重继承。<br>条款55 中Boost提供的版本。也可以解决该问题。</p>
+<p><strong>为阻止编译器自动合成一些函数，可将相应的成员函数声明为private并且不予实现</strong><br><strong>为阻止编译器自动合成一些函数，也可使用 uncopyable 这样的base class</strong></p>
 
     </div>
 
@@ -304,8 +308,7 @@
       </div>
       <footer class="post-footer">
           <div class="post-tags">
-              <a href="/tags/swift/" rel="tag"># swift</a>
-              <a href="/tags/%E5%8F%AF%E9%80%89%E5%80%BC/" rel="tag"># 可选值</a>
+              <a href="/tags/effective-C/" rel="tag"># effective C++</a>
           </div>
 
         
@@ -314,12 +317,12 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2021/04/04/hello-world/" rel="prev" title="Hello World">
-      <i class="fa fa-chevron-left"></i> Hello World
+    <a href="/2021/11/26/Effective-C-%E6%9D%A1%E6%AC%BE05-%E4%BA%86%E8%A7%A3C-%E9%BB%98%E9%BB%98%E7%BC%96%E5%86%99%E5%B9%B6%E8%B0%83%E7%94%A8%E4%BA%86%E9%82%A3%E4%BA%9B%E5%87%BD%E6%95%B0/" rel="prev" title="Effective C++ 条款05:了解C++默默编写并调用了那些函数">
+      <i class="fa fa-chevron-left"></i> Effective C++ 条款05:了解C++默默编写并调用了那些函数
     </a></div>
       <div class="post-nav-item">
-    <a href="/2021/04/24/swift%20GCD/" rel="next" title="swift GCD">
-      swift GCD <i class="fa fa-chevron-right"></i>
+    <a href="/2021/11/26/Effective-C-%E6%9D%A1%E6%AC%BE07-%E4%B8%BA%E5%A4%9A%E6%80%81%E5%9F%BA%E7%B1%BB%E5%A3%B0%E6%98%8Evirtual-%E6%9E%90%E6%9E%84%E5%87%BD%E6%95%B0/" rel="next" title="Effective C++ 条款07:为多态基类声明virtual 析构函数">
+      Effective C++ 条款07:为多态基类声明virtual 析构函数 <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
       </footer>
@@ -380,7 +383,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#swift-%E5%8F%AF%E9%80%89%E5%80%BC"><span class="nav-number">1.</span> <span class="nav-text">swift 可选值</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1%E3%80%81%E8%83%8C%E6%99%AF"><span class="nav-number">1.1.</span> <span class="nav-text">1、背景</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Effective-C-%E6%9D%A1%E6%AC%BE06-%E8%8B%A5%E4%B8%8D%E6%83%B3%E4%BD%BF%E7%94%A8%E7%BC%96%E8%AF%91%E5%99%A8%E8%87%AA%E5%8A%A8%E7%94%9F%E6%88%90%E7%9A%84%E5%87%BD%E6%95%B0%EF%BC%8C%E5%B0%B1%E8%AF%A5%E6%98%8E%E7%A1%AE%E6%8B%92%E7%BB%9D"><span class="nav-number">1.</span> <span class="nav-text">Effective C++ 条款06:若不想使用编译器自动生成的函数，就该明确拒绝</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1%E3%80%81%E5%A6%82%E4%BD%95%E7%A6%81%E6%AD%A2%E7%BC%96%E8%AF%91%E5%99%A8%E8%87%AA%E5%8A%A8%E7%94%9F%E6%88%90%E5%A4%8D%E5%88%B6%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0"><span class="nav-number">1.1.</span> <span class="nav-text">1、如何禁止编译器自动生成复制构造函数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-%E6%88%91%E4%BB%AC%E8%AF%A5%E5%A6%82%E4%BD%95%E9%98%BB%E6%AD%A2%E7%BC%96%E8%AF%91%E5%99%A8%E5%90%88%E6%88%90%E6%8B%B7%E8%B4%9D%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0%EF%BC%9F"><span class="nav-number">1.1.1.</span> <span class="nav-text">1.1 我们该如何阻止编译器合成拷贝构造函数？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-private-%E7%9A%84%E5%B1%80%E9%99%90"><span class="nav-number">1.1.2.</span> <span class="nav-text">1.2 private 的局限</span></a></li></ol></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 

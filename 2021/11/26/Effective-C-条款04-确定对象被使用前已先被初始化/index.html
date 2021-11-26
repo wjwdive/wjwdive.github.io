@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"jarvissky.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="Effective C++ 条款04:确定对象被使用前已先被初始化1、C++中将对象初始化中一些无法预料的情况例如： 123456&#x2F;&#x2F;自某些语境下 x 保证被初始化（为0），但在其他语境中却不保证。class Point &amp;#123;  int x, y;&amp;#125;;···Point p; p的成员变量有时候会被初始化为0，有时候不会。读取未初始化的值会导致不明确的行为。 2">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Effective C++ 条款04:确定对象被使用前已先被初始化">
+<meta property="og:url" content="http://jarvissky.com/2021/11/26/Effective-C-%E6%9D%A1%E6%AC%BE04-%E7%A1%AE%E5%AE%9A%E5%AF%B9%E8%B1%A1%E8%A2%AB%E4%BD%BF%E7%94%A8%E5%89%8D%E5%B7%B2%E5%85%88%E8%A2%AB%E5%88%9D%E5%A7%8B%E5%8C%96/index.html">
+<meta property="og:site_name" content="Jarvis的天空">
+<meta property="og:description" content="Effective C++ 条款04:确定对象被使用前已先被初始化1、C++中将对象初始化中一些无法预料的情况例如： 123456&#x2F;&#x2F;自某些语境下 x 保证被初始化（为0），但在其他语境中却不保证。class Point &amp;#123;  int x, y;&amp;#125;;···Point p; p的成员变量有时候会被初始化为0，有时候不会。读取未初始化的值会导致不明确的行为。 2">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-11-26T14:43:27.000Z">
+<meta property="article:modified_time" content="2021-11-26T14:44:27.112Z">
+<meta property="article:author" content="Jarvis">
+<meta property="article:tag" content="effective C++">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://jarvissky.com/2021/11/26/Effective-C-%E6%9D%A1%E6%AC%BE04-%E7%A1%AE%E5%AE%9A%E5%AF%B9%E8%B1%A1%E8%A2%AB%E4%BD%BF%E7%94%A8%E5%89%8D%E5%B7%B2%E5%85%88%E8%A2%AB%E5%88%9D%E5%A7%8B%E5%8C%96/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Effective C++ 条款04:确定对象被使用前已先被初始化 | Jarvis的天空</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="Jarvis的天空" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Jarvis的天空</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">闲云野鹤</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">6</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">6</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">14</span></a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container"></div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="algolia-results">
+  <div id="algolia-stats"></div>
+  <div id="algolia-hits"></div>
+  <div id="algolia-pagination" class="algolia-pagination"></div>
+</div>
+
+      
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://jarvissky.com/2021/11/26/Effective-C-%E6%9D%A1%E6%AC%BE04-%E7%A1%AE%E5%AE%9A%E5%AF%B9%E8%B1%A1%E8%A2%AB%E4%BD%BF%E7%94%A8%E5%89%8D%E5%B7%B2%E5%85%88%E8%A2%AB%E5%88%9D%E5%A7%8B%E5%8C%96/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Jarvis">
+      <meta itemprop="description" content="干饭睡觉撸代码">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Jarvis的天空">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Effective C++ 条款04:确定对象被使用前已先被初始化
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-11-26 22:43:27 / 修改时间：22:44:27" itemprop="dateCreated datePublished" datetime="2021-11-26T22:43:27+08:00">2021-11-26</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/C/" itemprop="url" rel="index"><span itemprop="name">C++</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/C/effective-c/" itemprop="url" rel="index"><span itemprop="name">effective c++</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2021/11/26/Effective-C-%E6%9D%A1%E6%AC%BE04-%E7%A1%AE%E5%AE%9A%E5%AF%B9%E8%B1%A1%E8%A2%AB%E4%BD%BF%E7%94%A8%E5%89%8D%E5%B7%B2%E5%85%88%E8%A2%AB%E5%88%9D%E5%A7%8B%E5%8C%96/" class="post-meta-item leancloud_visitors" data-flag-title="Effective C++ 条款04:确定对象被使用前已先被初始化" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2021/11/26/Effective-C-%E6%9D%A1%E6%AC%BE04-%E7%A1%AE%E5%AE%9A%E5%AF%B9%E8%B1%A1%E8%A2%AB%E4%BD%BF%E7%94%A8%E5%89%8D%E5%B7%B2%E5%85%88%E8%A2%AB%E5%88%9D%E5%A7%8B%E5%8C%96/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/11/26/Effective-C-%E6%9D%A1%E6%AC%BE04-%E7%A1%AE%E5%AE%9A%E5%AF%B9%E8%B1%A1%E8%A2%AB%E4%BD%BF%E7%94%A8%E5%89%8D%E5%B7%B2%E5%85%88%E8%A2%AB%E5%88%9D%E5%A7%8B%E5%8C%96/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>6.6k</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="Effective-C-条款04-确定对象被使用前已先被初始化"><a href="#Effective-C-条款04-确定对象被使用前已先被初始化" class="headerlink" title="Effective C++ 条款04:确定对象被使用前已先被初始化"></a>Effective C++ 条款04:确定对象被使用前已先被初始化</h1><h2 id="1、C-中将对象初始化中一些无法预料的情况"><a href="#1、C-中将对象初始化中一些无法预料的情况" class="headerlink" title="1、C++中将对象初始化中一些无法预料的情况"></a>1、C++中将对象初始化中一些无法预料的情况</h2><p>例如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;自某些语境下 x 保证被初始化（为0），但在其他语境中却不保证。</span><br><span class="line">class Point &#123;</span><br><span class="line">  int x, y;</span><br><span class="line">&#125;;</span><br><span class="line">···</span><br><span class="line">Point p;</span><br></pre></td></tr></table></figure>
+<p>p的成员变量有时候会被初始化为0，有时候不会。<br>读取未初始化的值会导致不明确的行为。</p>
+<h2 id="2、一些初始化的规则"><a href="#2、一些初始化的规则" class="headerlink" title="2、一些初始化的规则"></a>2、一些初始化的规则</h2><p>通常如果你使用 C part of C++, 而且初始化可能招致运行期成本，那么就不保证发生初始化。<br>一旦进入 non-C parts of C++, 规则有些变化。这就很好地解释了为什么array 不保证其内容被初始化，而vector 却有此保证。</p>
+<span id="more"></span>
+
+<h3 id="2-1-内置类型初始化–-手动完成"><a href="#2-1-内置类型初始化–-手动完成" class="headerlink" title="2.1 内置类型初始化– 手动完成"></a>2.1 内置类型初始化– 手动完成</h3><p>由于我们不无法保证我们始终是处在一个状态。那么正确的做法是：永远在使用对象之前先将它初始化。<br>对于无任何成员的内置类型，必须手动完成此事。<br>例如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">int x &#x3D; 0;        &#x2F;&#x2F;对int 进行手工初始化</span><br><span class="line">const char *text &#x3D; &quot;A C-style string&quot;;      &#x2F;&#x2F;对指针进行手工初始化</span><br><span class="line">double d;</span><br><span class="line">std::cin &gt;&gt; d;    &#x2F;&#x2F;读取 input stream的方式完成初始化</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h3 id="2-2-内置类型以外的任何其他东西初始化–构造函数内部"><a href="#2-2-内置类型以外的任何其他东西初始化–构造函数内部" class="headerlink" title="2.2 内置类型以外的任何其他东西初始化–构造函数内部"></a>2.2 内置类型以外的任何其他东西初始化–构造函数内部</h3><p>对于内置类型以外的任何其他东西，初始化责任落在构造函数（constructors）身上。<br>规则很简单：确保每个够战术都将对象的每一个成员初始化。</p>
+<h3 id="2-3-不要混淆-赋值（assignment）-和-初始化（initialization）"><a href="#2-3-不要混淆-赋值（assignment）-和-初始化（initialization）" class="headerlink" title="2.3  不要混淆 赋值（assignment） 和 初始化（initialization）"></a>2.3  不要混淆 赋值（assignment） 和 初始化（initialization）</h3><p>例如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">class PhoneNumber&#123;&#125;;</span><br><span class="line">class ABEntry &#123;</span><br><span class="line">public: </span><br><span class="line">  ABEntry(const std::string&amp; name, const std::string&amp; address, const std::list&lt;PhoneNumber&gt;&amp; phones);</span><br><span class="line">private:</span><br><span class="line">  std::string theName;</span><br><span class="line">  std::string theAddress;</span><br><span class="line">  std::list&lt;PhoneNumber&gt; thePhones;</span><br><span class="line">  int numTimesConsulted;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">ABEntry::ABEntry(const std::string&amp; name, const std::string&amp; address, const std::list&lt;PhoneNumber&gt;&amp; phones) &#123;</span><br><span class="line">  theName &#x3D; name;  &#x2F;&#x2F;  这些都是赋值，而不是初始化</span><br><span class="line">  theAddress &#x3D; address;</span><br><span class="line">  thePhones &#x3D; phones;</span><br><span class="line">  theTimesConsulted &#x3D; 0;</span><br><span class="line"></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h3 id="2-4-构造函数的初始化最佳做法"><a href="#2-4-构造函数的初始化最佳做法" class="headerlink" title="2.4 构造函数的初始化最佳做法"></a>2.4 构造函数的初始化最佳做法</h3><p>这可以使得ABEntry对象带有你期望（你制定）的值，但不是最佳做法。<br>C++规定，对象的成员变量的初始化动作发生在进入构造函数本体之前。在ABEntry构造函数内， theName, theAddress,thePhone 都不是被初始化，而不是被赋值。<br>初始化发生的时间更早，发生于这些成员的default构造函数被自动调用之时。【比进入ABEntry构造函数本体的时间更早】。<br>numTimesConsulted除外，因为它属于内置类型，不保证一定在你所看到的那个赋值动作的时间点之前获得初值。</p>
+<p>ABEntry构造函数的最佳写法是：成员初始化列表。member initialization list</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;这是成员初始化列表，够着函数内部不用做任何动作</span><br><span class="line">ABEntry::ABEntry(const std::string&amp; name, const std::string&amp; address, const std::list&lt;PhoneNumber&gt; &amp;phones)</span><br><span class="line">:theName(name),</span><br><span class="line">  theAddress(address),</span><br><span class="line">  thePhones(phones),</span><br><span class="line">  numTimesConsulted(0)&#123;&#125;</span><br></pre></td></tr></table></figure>
+<p> 和赋值函数不同的是，<br>赋值函数会先调用 默认构造函数，为theName,theAddress,thePhoens设置初始值。<br>然后立刻再对他们赋予新值。default构造函数的一切作为都因此浪费了。<br>成员初始化列表避免了这个问题。<br>成员初始值列针对各个成员变量而设置的实参，被拿去作为各个成员变量的构造函数的实参。<br>本例中 theName以name为初始值进行copy 构造，theAddress  以address 为初始值进行copy 构造，thePhones 以phones 以 phones为初始值进行copy 构造。<br>ABEntry的无参数构造函数</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">ABEntry::ABEntry()</span><br><span class="line">  :theName(), </span><br><span class="line">  theAddress(),</span><br><span class="line">  thePhones(),</span><br><span class="line">  numTimesConsulted(0)</span><br><span class="line">&#123;&#125;</span><br></pre></td></tr></table></figure>
+<p>编译器会为用户自定义类型（user-defined types）的成员变量自动调用default构造函数–如果那些成员变量在”成员初值列”中没有被指定初值的还。<br>对于内置类型，若果成员初始列一楼了它，它就没有初始值。因此可能导致”不明确行为”。<br>所以，我们可以立下一个规则：<strong>总是在初始化列表中列出所有的成员变量</strong></p>
+<h3 id="2-5-成员变量是-const-或-referneces的初始化"><a href="#2-5-成员变量是-const-或-referneces的初始化" class="headerlink" title="2.5 成员变量是 const 或 referneces的初始化"></a>2.5 成员变量是 const 或 referneces的初始化</h3><p><strong>如果成员变量是 const 或 referneces，它们一定需要初始值，不能被赋值。这里就需要成员初始化列表里初始化他们。</strong></p>
+<p>如果classes拥有多个构造函数，每个构造函数有自己的成员初始值列。如果这种classes存在许多成员变量和/或base classes , 多份成员初值列的存在就会导致不受欢迎的重复（在初值列内）和无聊的工作。这种情况下可以合理地的在初值列中遗漏那些”赋值表现像初始化一样好的”成员变量，改用他们的赋值操作，并将那些复之操作移往某个函数（通常是private），供所有构造函数调用。<br>这种做法在”成员变量的初值是由文件或数据库读入”时特别有用。然而，比起经由赋值操作完成的”伪初始化”（pseudo-initialization）,通过成员初始列（member initialization list）完成”真正初始化”通常更加可取。<br>【和使用完整的初始化列表有矛盾？C++里经常是这样，可以这样，也可以那样，视情况而定】</p>
+<p>C++有着十分固定的”成员初始化次序”。次序总是相同：base classes 更早于其derived classes被初始化， 而classes的成员变量总是以其声明次序被初始化。回头看 ABEntry,其 theName 成员永远最先被初始化，然后是 theAddress， 再来是 thePhones，最后是numTimesConsulted。即使他们在成员初值列中可以以不同的次序出现（C++允许这样）。为避免你或你的检阅这迷惑，并避免某些可能存在的晦涩错误，应当在成员初始列中条列各个成员时，最好总是以其声明次序为次序。<br>【例如，array初始化时，必须先初始化array的length 】</p>
+<p>以上，内置类型初始化，而且构造函数运用”成员初值列”初始化base classes 和成员变量，那就剩唯一需要操心的<strong>不同编译但愿内定义的non-local static 对象</strong>的初始化次序。</p>
+<h3 id="2-6-static对象的初始化"><a href="#2-6-static对象的初始化" class="headerlink" title="2.6 static对象的初始化"></a>2.6 static对象的初始化</h3><p>static对象，其生命周期从被构造出来直到程序结束为止，因此stack和heap-based对象都被排除。<br>这种对象包括global对象、定义与namespace作用域内的对象、在classes内、在函数内、以及在file 作用域内被声明为static 的对象。<br>函数内的static对象称为 local static 对象(因为他们呢对函数而言是 local)， 其他static 对象 称为 non-local static对象。程序结束时static对象会自动被销毁，也就是它们的析构函数会在main()结束时被自动调用。</p>
+<p>所谓编译单元（translation unit） 是指产出单一目标文件（single object file） 的那些源码。基本上是单一源文件假设昂其所包含的头文件（#include files）.</p>
+<p>会出问题的情况：涉及两个源码文件，每一个内至少一个 non-local static 对象（也就是说该对象是global 或 位于 namespace  作用域内， 抑或在class 内或 file 作用域内被声明为 static）。真正的问题是： 如果某编译单元内的某个 non-local static 对象的初始化动作使用了 另一个编译单元的某个 non-local static 对象，它所用到的 这个对象可能尚未被初始化，因为C++ 对”定义于不同编译单元内的 non-local static对象”的初始化次序并无明确定义。</p>
+<p>例如：你有一个FileSystem class,它让互联网上的文件看起来好像位于本机（local）。由于这个class 使世界看起来像个单一文件系统，你可能会产出一个特殊对象，位于global 或 namespace 作用域内，象征单一文件系统：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">class FileSystem &#123;          &#x2F;&#x2F;来自你的程序库</span><br><span class="line">public:</span><br><span class="line">  ···</span><br><span class="line">  std::size_t numDisks() const;    &#x2F;&#x2F;众多成员函数之一</span><br><span class="line">  ···</span><br><span class="line">&#125;;</span><br><span class="line">extern FileSystem tfs;      &#x2F;&#x2F;预备给客户使用的对象；</span><br></pre></td></tr></table></figure>
+
+<p>FileSystem对象绝对不是一个稀松平常无关痛痒的（trival)对象，因此 你的客户如果在theFileSystem 对象构造完成前就使用它，会遭到灭顶之灾。</p>
+<p>现在假设某些客户建立了一个class用以处理文件系统内的目录（directories）。很自然他们的class会用上theFileSystem 对象：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">class Directory &#123;</span><br><span class="line">public:</span><br><span class="line">  Directory(params);</span><br><span class="line">  ···</span><br><span class="line">&#125;;</span><br><span class="line">Directory::Directory(params) &#123;</span><br><span class="line">  ···</span><br><span class="line">  std:size_t disks &#x3D; tfs.numDisks();  &#x2F;&#x2F;使用 tfs对象</span><br><span class="line">  ···</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>进一步假设，这些客户决定创建一个 Directory 对象，用来放置临时文件：<br>Directory tempDir(params);    //为临时文件而做出的目录</p>
+<p>现在，初始化次序的重要性显示出来了：除非tfs 在 tempDir 之前先被初始化，否则tempDir 的构造函数会用到尚未初始化的 tfs。但tfs 和 tempDir 是不同的人在不同时间于不同的源码文件建立起来的，它们是定于不同编译单元内的 non-local static对象。如何能够确定 tfs 会在 tempDir 之前被初始化？<br><strong>希特，你无法确定</strong><br><strong>C++对于”定义于不同的编译但愿内的non-local static 对象”的初始化相对次序并无明确定义</strong><br>这是因为：决定他们的初始化次序相当困难，非常困难，根本无解。最常见的形式，也就是多个编译单元内的 non-local static 对象经由”模版隐式具现化，implicit template instantiations”形成（而后者可能也是经由”模板隐式具现化”形成），不但不可能决定正确的初始化次序，甚至往往不值得寻找”可决定正确次序”的特殊情况。</p>
+<p>怎么解决这个 non-local static对象在不同的对象嵌套是初始化顺序无法确定呢？？<br>方法是：<strong>将每个non-local static 对象搬到自己的专属函数内（该对象在此函数内被声明为static）</strong><br><strong>这些函数返回一个 reference 指向它所含的对象。然后用户调用这些函数，而不直接指涉这些对象。</strong></p>
+<p>换句话说，non-local static 对象被 local static 对象替换了。没错这也是设计模式里，Singleton单例模式的一个常见实现手法。</p>
+<p>这个手法得以成功的基础在于：C++保证，函数内的local static 对象会在 “该函数被调用期间””首次遇上该对象之定义式”时被初始化。所以如果你以”函数调用”（返回一个reference 指向local static 对象）替换”直接访问 non-local static 对象”，你就获得了保证，保证你所获得的那个reference将指向一个历经初始化的对象。更棒的是，如果你从未调用non-local static 对象的”仿真函数”，就绝不会引发构造和析构成本；真正的non-local static 对象可没有这等优势。</p>
+<p>这中技术施行与tfs 和 tempDir上：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">class FileSystem&#123; ··· &#125;；&#x2F;&#x2F;同前</span><br><span class="line">&#x2F;&#x2F;这个函数用来替换提tfs 对象；它在FileSystem calss 中可能是个static。</span><br><span class="line">FileSystem&amp; tfs() &#123;    </span><br><span class="line">  static FileSystem fs;  &#x2F;&#x2F;定义并初始化一个local static对象， 返回一个 reference 指向上述对象。</span><br><span class="line">  return fs;</span><br><span class="line">&#125;</span><br><span class="line">class Directory&#123; ··· &#125;;  &#x2F;&#x2F;同前</span><br><span class="line">Directory::Directory( params ) &#123;&#x2F;&#x2F;  同前，但是原本的 reference to tfs 现在改为tfs()</span><br><span class="line">  ···</span><br><span class="line">  std::size_t disks &#x3D; tfs().numDisks();</span><br><span class="line">  ···</span><br><span class="line">&#125;;</span><br><span class="line">&#x2F;&#x2F;这个函数用来替换tempDir 对象；它在Directory class 中可能是个 static。定义并初始化local static 对象，返回一个 reference 指向上述对象</span><br><span class="line">Directory&amp; tempDir() &#123;</span><br><span class="line">  static Directory td;</span><br><span class="line">  return td;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>修改之后的程序，这个系统程序的客户完全像以前一样的使用它，唯一不同的是他们现在使用 tfs() 和 tempDir() 而不再是 tfs 和 tempDir。<br>也就是说他们使用函数返回的”指向static 对象”的references, 而不再使用static对象自身。</p>
+<p>这种结构下的 reference-returning 函数往往十分单纯： 第一行定义并初始化一个 local static对象， 第二行返回它。<br>这样的单纯性使它们成为绝佳的inlining 候选人，尤其是它们被频繁调用的话。<br>但是这些函数中<strong>内含 static 对象</strong>，不论它是local或者non-local，在多线程环境下”等待某事发生”都会有麻烦。处理这个麻烦的一种做法是： 在程序的单线程启动阶段（single-threaded startup portion）手工调用所有 reference-returning函数，这可能消除与初始化有关的”竞速形势（race conditions）”。</p>
+<p>当然，reference-returning函数防止”初始化次序问题”，前提是其中有着一个对对象而言合理的初始化次序。如果你有一个系统，其中对象A必须在对象B之前先初始化，但A的初始化能否成功却又受制于B是否已初始化，这时候你就有麻烦了。这样鸡生蛋，蛋生鸡的问题你搞出来你是自作自受。</p>
+<p>综上，为避免在对象出售话之前过早地使用它们，你需要做三件事。</p>
+<ul>
+<li>第一：手工初始化内置型 non-member 对像</li>
+<li>第二：使用成员初值列（member initialization lists）处理所有成员变量。</li>
+<li>最后：在”初始化次序不确定性”的情况下，加强设计。利用calss内函数 内部的 local static 替换对象的 non-local static对象。使用饮用而不是直接使用对象。还要注意 多线程的时候，提前手动调用 这个内部函数。保证线程安全。</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+      <div>
+        
+          <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------感谢您的阅读<i class="fa fa-flag"></i>欢迎讨论-------------</div>
+    
+</div>
+        
+      </div>
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/effective-C/" rel="tag"># effective C++</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/11/26/Effective-C-%E6%9D%A1%E6%AC%BE03-%E5%B0%BD%E5%8F%AF%E8%83%BD%E4%BD%BF%E7%94%A8const/" rel="prev" title="Effective C++ 条款03:尽可能使用const">
+      <i class="fa fa-chevron-left"></i> Effective C++ 条款03:尽可能使用const
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/11/26/Effective-C-%E6%9D%A1%E6%AC%BE05-%E4%BA%86%E8%A7%A3C-%E9%BB%98%E9%BB%98%E7%BC%96%E5%86%99%E5%B9%B6%E8%B0%83%E7%94%A8%E4%BA%86%E9%82%A3%E4%BA%9B%E5%87%BD%E6%95%B0/" rel="next" title="Effective C++ 条款05:了解C++默默编写并调用了那些函数">
+      Effective C++ 条款05:了解C++默默编写并调用了那些函数 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Effective-C-%E6%9D%A1%E6%AC%BE04-%E7%A1%AE%E5%AE%9A%E5%AF%B9%E8%B1%A1%E8%A2%AB%E4%BD%BF%E7%94%A8%E5%89%8D%E5%B7%B2%E5%85%88%E8%A2%AB%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="nav-number">1.</span> <span class="nav-text">Effective C++ 条款04:确定对象被使用前已先被初始化</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1%E3%80%81C-%E4%B8%AD%E5%B0%86%E5%AF%B9%E8%B1%A1%E5%88%9D%E5%A7%8B%E5%8C%96%E4%B8%AD%E4%B8%80%E4%BA%9B%E6%97%A0%E6%B3%95%E9%A2%84%E6%96%99%E7%9A%84%E6%83%85%E5%86%B5"><span class="nav-number">1.1.</span> <span class="nav-text">1、C++中将对象初始化中一些无法预料的情况</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2%E3%80%81%E4%B8%80%E4%BA%9B%E5%88%9D%E5%A7%8B%E5%8C%96%E7%9A%84%E8%A7%84%E5%88%99"><span class="nav-number">1.2.</span> <span class="nav-text">2、一些初始化的规则</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-%E5%86%85%E7%BD%AE%E7%B1%BB%E5%9E%8B%E5%88%9D%E5%A7%8B%E5%8C%96%E2%80%93-%E6%89%8B%E5%8A%A8%E5%AE%8C%E6%88%90"><span class="nav-number">1.2.1.</span> <span class="nav-text">2.1 内置类型初始化– 手动完成</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-%E5%86%85%E7%BD%AE%E7%B1%BB%E5%9E%8B%E4%BB%A5%E5%A4%96%E7%9A%84%E4%BB%BB%E4%BD%95%E5%85%B6%E4%BB%96%E4%B8%9C%E8%A5%BF%E5%88%9D%E5%A7%8B%E5%8C%96%E2%80%93%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0%E5%86%85%E9%83%A8"><span class="nav-number">1.2.2.</span> <span class="nav-text">2.2 内置类型以外的任何其他东西初始化–构造函数内部</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-%E4%B8%8D%E8%A6%81%E6%B7%B7%E6%B7%86-%E8%B5%8B%E5%80%BC%EF%BC%88assignment%EF%BC%89-%E5%92%8C-%E5%88%9D%E5%A7%8B%E5%8C%96%EF%BC%88initialization%EF%BC%89"><span class="nav-number">1.2.3.</span> <span class="nav-text">2.3  不要混淆 赋值（assignment） 和 初始化（initialization）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-4-%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0%E7%9A%84%E5%88%9D%E5%A7%8B%E5%8C%96%E6%9C%80%E4%BD%B3%E5%81%9A%E6%B3%95"><span class="nav-number">1.2.4.</span> <span class="nav-text">2.4 构造函数的初始化最佳做法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-5-%E6%88%90%E5%91%98%E5%8F%98%E9%87%8F%E6%98%AF-const-%E6%88%96-referneces%E7%9A%84%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="nav-number">1.2.5.</span> <span class="nav-text">2.5 成员变量是 const 或 referneces的初始化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-6-static%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="nav-number">1.2.6.</span> <span class="nav-text">2.6 static对象的初始化</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Jarvis"
+      src="/images/avatar.gif">
+  <p class="site-author-name" itemprop="name">Jarvis</p>
+  <div class="site-description" itemprop="description">干饭睡觉撸代码</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">14</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://www.github.com/wjwdive" title="GitHub → https:&#x2F;&#x2F;www.github.com&#x2F;wjwdive" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:jarvissky@163.com" title="E-Mail → mailto:jarvissky@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">null </a>
+      <img src="/images/beian.png" style="display: inline-block;"><a href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=2021009233" rel="noopener" target="_blank">沪ICP备2021009233号-1 </a>
+  </div>
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Jarvis</span>
+
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">50k</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="//cdn.jsdelivr.net/npm/algoliasearch@4/dist/algoliasearch-lite.umd.js"></script>
+<script src="//cdn.jsdelivr.net/npm/instantsearch.js@4/dist/instantsearch.production.min.js"></script>
+<script src="/js/algolia-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : 'MXtrA2biGG8FzjWmPUUrCXPl-9Nh9j0Va',
+      appKey     : '5ABrVsKIAfCv40vYhWRu5E9f',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : true,
+      lang       : 'zh-cn' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : true,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>

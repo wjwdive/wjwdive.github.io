@@ -20,19 +20,20 @@
     var CONFIG = {"hostname":"jarvissky.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="技术路上持续精进 博客园：    https:&#x2F;&#x2F;www.cnblogs.com&#x2F;wjw-blog&#x2F; Email:    &amp;#x6a;&amp;#97;&amp;#114;&amp;#x76;&amp;#x69;&amp;#115;&amp;#x73;&amp;#x6b;&amp;#x79;&amp;#64;&amp;#x31;&amp;#x36;&amp;#51;&amp;#x2e;&amp;#x63;&amp;#x6f;&amp;#x6d;">
-<meta property="og:type" content="website">
-<meta property="og:title" content="关于我">
-<meta property="og:url" content="http://jarvissky.com/about/index.html">
+  <meta name="description" content="Effective C++ 条款10:令operator&#x3D;  返回一个 reference to *this1、连锁赋值1234int x, y, z;x &#x3D; y &#x3D; z &#x3D; 1;&#x2F;&#x2F;等同于x &#x3D; (y &#x3D; (z &#x3D; 1)); 1赋值给z, z更新为1后再赋值给y, y更新为1在赋值给x。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Effective C++ 条款10:令operator&#x3D;  返回一个 reference to *this">
+<meta property="og:url" content="http://jarvissky.com/2021/11/26/Effective-C-%E6%9D%A1%E6%AC%BE10-%E4%BB%A4operator-%E8%BF%94%E5%9B%9E%E4%B8%80%E4%B8%AA-reference-to-this/index.html">
 <meta property="og:site_name" content="Jarvis的天空">
-<meta property="og:description" content="技术路上持续精进 博客园：    https:&#x2F;&#x2F;www.cnblogs.com&#x2F;wjw-blog&#x2F; Email:    &amp;#x6a;&amp;#97;&amp;#114;&amp;#x76;&amp;#x69;&amp;#115;&amp;#x73;&amp;#x6b;&amp;#x79;&amp;#64;&amp;#x31;&amp;#x36;&amp;#51;&amp;#x2e;&amp;#x63;&amp;#x6f;&amp;#x6d;">
+<meta property="og:description" content="Effective C++ 条款10:令operator&#x3D;  返回一个 reference to *this1、连锁赋值1234int x, y, z;x &#x3D; y &#x3D; z &#x3D; 1;&#x2F;&#x2F;等同于x &#x3D; (y &#x3D; (z &#x3D; 1)); 1赋值给z, z更新为1后再赋值给y, y更新为1在赋值给x。">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2021-04-05T05:32:44.000Z">
-<meta property="article:modified_time" content="2021-04-05T05:49:34.625Z">
+<meta property="article:published_time" content="2021-11-26T14:51:36.000Z">
+<meta property="article:modified_time" content="2021-11-26T14:52:21.266Z">
 <meta property="article:author" content="Jarvis">
+<meta property="article:tag" content="effective C++">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="http://jarvissky.com/about/">
+<link rel="canonical" href="http://jarvissky.com/2021/11/26/Effective-C-%E6%9D%A1%E6%AC%BE10-%E4%BB%A4operator-%E8%BF%94%E5%9B%9E%E4%B8%80%E4%B8%AA-reference-to-this/">
 
 
 <script id="page-configurations">
@@ -40,13 +41,12 @@
   CONFIG.page = {
     sidebar: "",
     isHome : false,
-    isPost : false,
+    isPost : true,
     lang   : 'zh-CN'
   };
 </script>
 
-  <title>关于我 | Jarvis的天空
-</title>
+  <title>Effective C++ 条款10:令operator=  返回一个 reference to *this | Jarvis的天空</title>
   
 
 
@@ -185,50 +185,146 @@
       <div class="main-inner">
         <div class="content-wrap">
           
-  
-  
 
-          <div class="content page posts-expand">
+          <div class="content post posts-expand">
             
 
     
-    
-    
-    <div class="post-block" lang="zh-CN">
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://jarvissky.com/2021/11/26/Effective-C-%E6%9D%A1%E6%AC%BE10-%E4%BB%A4operator-%E8%BF%94%E5%9B%9E%E4%B8%80%E4%B8%AA-reference-to-this/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Jarvis">
+      <meta itemprop="description" content="干饭睡觉撸代码">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Jarvis的天空">
+    </span>
       <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Effective C++ 条款10:令operator=  返回一个 reference to *this
+        </h1>
 
-<h1 class="post-title" itemprop="name headline">关于我
-</h1>
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
 
-<div class="post-meta">
+              <time title="创建时间：2021-11-26 22:51:36 / 修改时间：22:52:21" itemprop="dateCreated datePublished" datetime="2021-11-26T22:51:36+08:00">2021-11-26</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/C/" itemprop="url" rel="index"><span itemprop="name">C++</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/C/effective-c/" itemprop="url" rel="index"><span itemprop="name">effective c++</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2021/11/26/Effective-C-%E6%9D%A1%E6%AC%BE10-%E4%BB%A4operator-%E8%BF%94%E5%9B%9E%E4%B8%80%E4%B8%AA-reference-to-this/" class="post-meta-item leancloud_visitors" data-flag-title="Effective C++ 条款10:令operator=  返回一个 reference to *this" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2021/11/26/Effective-C-%E6%9D%A1%E6%AC%BE10-%E4%BB%A4operator-%E8%BF%94%E5%9B%9E%E4%B8%80%E4%B8%AA-reference-to-this/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/11/26/Effective-C-%E6%9D%A1%E6%AC%BE10-%E4%BB%A4operator-%E8%BF%94%E5%9B%9E%E4%B8%80%E4%B8%AA-reference-to-this/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>721</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="Effective-C-条款10-令operator-返回一个-reference-to-this"><a href="#Effective-C-条款10-令operator-返回一个-reference-to-this" class="headerlink" title="Effective C++ 条款10:令operator=  返回一个 reference to *this"></a>Effective C++ 条款10:令operator=  返回一个 reference to *this</h1><h2 id="1、连锁赋值"><a href="#1、连锁赋值" class="headerlink" title="1、连锁赋值"></a>1、连锁赋值</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">int x, y, z;</span><br><span class="line">x &#x3D; y &#x3D; z &#x3D; 1;</span><br><span class="line">&#x2F;&#x2F;等同于</span><br><span class="line">x &#x3D; (y &#x3D; (z &#x3D; 1));</span><br></pre></td></tr></table></figure>
+<p>1赋值给z, z更新为1后再赋值给y, y更新为1在赋值给x。</p>
+<span id="more"></span>
+
+<p>为了实现”连锁赋值”， 赋值操作符必须返回一个 reference 志向操作符的左侧实参数。这是为class 实现赋值操作符时必须要遵循的。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">class Widget &#123;</span><br><span class="line">public:</span><br><span class="line">···</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 返回类型是个 reference，指向当前对象</span><br><span class="line">Widget&amp; operator &#x3D; (const Widget&amp; rhs) &#123;</span><br><span class="line">···</span><br><span class="line">  return* this;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>这个协议不仅适用于以上的标准赋值形式，也适用于所有赋值相关运算，例如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">class Widget &#123;</span><br><span class="line">public:</span><br><span class="line">···</span><br><span class="line">&#x2F;&#x2F;这个协议适用于 +&#x3D;， -&#x3D;， *&#x3D; 等等</span><br><span class="line">Widget&amp; operator+&#x3D;(const Widget&amp; rhs) &#123;</span><br><span class="line">  ···</span><br><span class="line">  return *this;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;此函数也适用，即使此操作符的参数类型不符合协定。</span><br><span class="line">Widget&amp; operator&#x3D;(int rhs)&#123;</span><br><span class="line">  ···</span><br><span class="line">  return *this;</span><br><span class="line">&#125;</span><br><span class="line">···</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p><strong>记住，令赋值（assignment）操作符返回一个 reference to *this.</strong></p>
+
+    </div>
+
+    
+    
+    
+      <div>
+        
+          <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------感谢您的阅读<i class="fa fa-flag"></i>欢迎讨论-------------</div>
+    
+</div>
+        
+      </div>
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/effective-C/" rel="tag"># effective C++</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/11/26/Effective-C-%E6%9D%A1%E6%AC%BE09-%E7%BB%9D%E5%AF%B9%E4%B8%8D%E5%9C%A8%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0%E5%92%8C%E6%9E%90%E6%9E%84%E5%87%BD%E6%95%B0%E4%B8%AD%E8%B0%83%E7%94%A8virtual%E5%87%BD%E6%95%B0/" rel="prev" title="Effective C++ 条款09:绝对不在构造函数和析构函数中调用virtual函数">
+      <i class="fa fa-chevron-left"></i> Effective C++ 条款09:绝对不在构造函数和析构函数中调用virtual函数
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
   
 
-</div>
-
-</header>
-
-      
-      
-      
-      <div class="post-body">
-          <p>技术路上持续精进</p>
-<p>博客园：    <a target="_blank" rel="noopener" href="https://www.cnblogs.com/wjw-blog/">https://www.cnblogs.com/wjw-blog/</a></p>
-<p>Email:    <a href="mailto:&#x6a;&#97;&#114;&#x76;&#x69;&#115;&#x73;&#x6b;&#x79;&#64;&#x31;&#x36;&#51;&#x2e;&#x63;&#x6f;&#x6d;">&#x6a;&#97;&#114;&#x76;&#x69;&#115;&#x73;&#x6b;&#x79;&#64;&#x31;&#x36;&#51;&#x2e;&#x63;&#x6f;&#x6d;</a></p>
-
-      </div>
-      
-      
-      
-    </div>
-    
-
-    
-    
-    
 
 
           </div>
           
+    <div class="comments" id="valine-comments"></div>
 
 <script>
   window.addEventListener('tabs:register', () => {
@@ -275,6 +371,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Effective-C-%E6%9D%A1%E6%AC%BE10-%E4%BB%A4operator-%E8%BF%94%E5%9B%9E%E4%B8%80%E4%B8%AA-reference-to-this"><span class="nav-number">1.</span> <span class="nav-text">Effective C++ 条款10:令operator&#x3D;  返回一个 reference to *this</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1%E3%80%81%E8%BF%9E%E9%94%81%E8%B5%8B%E5%80%BC"><span class="nav-number">1.1.</span> <span class="nav-text">1、连锁赋值</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
